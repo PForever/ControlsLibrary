@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ControlsLibrary.AbstractControllers.TabView;
 using System.Windows.Forms;
-using ControlsLibrary.AbstractControllers.Tab;
-using ControlsLibrary.Factories.Concrete.WinForms;
-using ControlsLibrary.Tab.AbstractControllers;
+using ControlsLibrary.AbstractControllers.TabView.Tab;
+using ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab;
+using System;
 
 namespace ControlsLibrary.Factories.Concrete
 {
@@ -19,7 +15,7 @@ namespace ControlsLibrary.Factories.Concrete
 
         public ITabContent CreateTabContent()
         {
-            return new TabContent();
+            return TabContent.CreateDefaultContentol();
         }
 
         public ITabPanel CreateTabPanel(object panel)
@@ -28,11 +24,15 @@ namespace ControlsLibrary.Factories.Concrete
         }
         public ITabPanel CreateTabPanel(ITabContent tabContent)
         {
-            return new TabPanel((Control)CreateTabContent(tabContent).Control);
+            return TabPanel.CreateDefaultPanel((Control)CreateTabContent(tabContent).Control);
         }
         public ITabPanel CreateTabPanel()
         {
-            return new TabPanel();
+            return TabPanel.CreateDefaultPanel();
+        }
+        public IBufferedCollection CreateBufferedCollection()
+        {
+            throw new NotImplementedException();
         }
     }
 }

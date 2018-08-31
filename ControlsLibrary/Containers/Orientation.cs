@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ControlsLibrary.Factories
+namespace ControlsLibrary.Containers
 {
-    interface ICreator
+    public enum Orientation
     {
-        IFactory Factory { get; }
+        Horizontal = 0,
+        Vertical = 1
     }
 }

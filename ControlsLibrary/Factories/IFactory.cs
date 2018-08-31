@@ -1,6 +1,5 @@
-﻿using ControlsLibrary.AbstractControllers;
-using ControlsLibrary.AbstractControllers.Tab;
-using ControlsLibrary.Tab.AbstractControllers;
+﻿using ControlsLibrary.AbstractControllers.TabView;
+using ControlsLibrary.AbstractControllers.TabView.Tab;
 
 namespace ControlsLibrary.Factories
 {
@@ -11,5 +10,7 @@ namespace ControlsLibrary.Factories
         ITabPanel CreateTabPanel();
         ITabContent CreateTabContent(object content);
         ITabContent CreateTabContent();
+        ITabCollection CreateTabCollection();
+        IBufferedCollection CreateBufferedCollection();
     }
 }
