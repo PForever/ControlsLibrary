@@ -1,7 +1,8 @@
 ﻿using System.Drawing;
+using ControlsLibrary.AbstractControllers;
 using ControlsLibrary.AbstractControllers.TabView.Tab;
 
-namespace ControlsLibrary.AbstractControllers.TabView
+namespace ControlsLibrary.Containers
 {
     public struct TabKvP : IControl
     {

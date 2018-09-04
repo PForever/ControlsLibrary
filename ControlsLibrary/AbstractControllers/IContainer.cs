@@ -9,6 +9,6 @@ namespace ControlsLibrary.AbstractControllers
 {
     public interface IContainer : IControl
     {
-        IList<IControl> Childs { get; set; }
+        IList<IControl> Controls { get; set; }
     }
 }

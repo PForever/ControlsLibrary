@@ -5,41 +5,77 @@ using ControlsLibrary.Containers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
 {
-    public class TabPanel : Panel, ITabPanel
-    {
+    public class TabPanel : ITabPanel
+    { 
+        private WinFactory _factory;
+        private Panel _panel;
         protected TabPanel()
         {
         }
 
-        //public TabPanel(Panel panel)
-        //{
-        //    Panel = panel;
-        //}
-
-        public static TabPanel CreateDefaultPanel(Control control)
+        public TabPanel(Panel panel, WinFactory factory)
         {
-            throw new NotImplementedException();
+            _factory = factory;
+            _panel = panel;
+        }
+
+        public static TabPanel CreateDefaultPanel(Control control, WinFactory factory)
+        {
+            return new TabPanel(new Panel {Name = control.Name}, factory);
         }
         public static TabPanel CreateDefaultPanel()
         {
             throw new NotImplementedException();
         }
 
-        //object ITabPanel.Panel { get => Panel; set => Panel = (Panel) value; }
-        //public Panel Panel { get; set; }
-        public bool IsSelected { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Containers.Orientation Orientation { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IList<IControl> Childs { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public double Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public double Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        Containers.Orientation IPanel.Orientation { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        object IControl.Control { get => Panel; set => Panel = (Panel)value; }
+        public Panel Panel { get; set; }
+        public bool IsSelected { get; set; }
+        public Containers.Orientation Orientation { get; set; }
+
+        public IList<IControl> Controls
+        {
+            //TODO починить
+            get => _factory.CreateControls(Controls).ToList();
+            set => _panel.Controls.AddRange(value.Select(c => (Control)c.Control).ToArray());
+        }
+
+        public string Name
+        {
+            get => _panel.Name;
+            set => _panel.Name = value;
+        }
+
+        public Point Location
+        {
+            get => _panel.Location;
+            set => _panel.Location = value;
+        }
+
+        public bool Visible
+        {
+            get => _panel.Visible;
+            set => _panel.Visible = value;
+        }
+
+        public int Width
+        {
+            get => _panel.Width;
+            set => _panel.Width = value;
+        }
+
+        public int Height
+        {
+            get => _panel.Height;
+            set => _panel.Height = value;
+        }
+
+        Containers.Orientation IPanel.Orientation { get; set; }
 
         public event TabDeleteEventHandler TabDeleted;
         public event TabMoveHandler TabMoved;
@@ -62,6 +98,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
+        private Panel panel;
 
         protected virtual void Dispose(bool disposing)
         {

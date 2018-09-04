@@ -49,12 +49,14 @@
     <Compile Include="AbstractControllers\IContainer.cs" />
     <Compile Include="AbstractControllers\IControl.cs" />
     <Compile Include="AbstractControllers\IPanel.cs" />
-    <Compile Include="AbstractControllers\TabView\BufferedCollection.cs" />
+    <Compile Include="AbstractControllers\TabView\IBufferedCollection.cs" />
+    <Compile Include="AbstractControllers\TabView\ISpliter.cs" />
     <Compile Include="AbstractControllers\TabView\ITabCollection.cs" />
     <Compile Include="AbstractControllers\TabView\ITabView.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\SeparratorLogic.cs" />
     <Compile Include="Containers\Position.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabSelectedEventHandler.cs" />
-    <Compile Include="AbstractControllers\TabView\TabKvP.cs" />
+    <Compile Include="Containers\TabKvP.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabMoveEventArgs.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabSelectedEventArgs.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\ITabContent.cs" />
@@ -63,15 +65,19 @@
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabsEventArgs.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabMoveHandler.cs" />
     <Compile Include="Containers\Orientation.cs" />
+    <Compile Include="Factories\Concrete\Extantions\ExtantionsFactory.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\ViewCollectionLogic.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\SplitPanelLogic.cs" />
+    <Compile Include="Factories\Concrete\WinForms\Containers\ControlList.cs" />
+    <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabViewContainer.cs" />
     <Compile Include="Factories\Concrete\WinFactory.cs" />
-    <Compile Include="Factories\Concrete\WinForms\TabView\TabCollection.cs" />
-    <Compile Include="Factories\Concrete\WinForms\TabView\ATabView.cs" />
-    <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabContent.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="AbstractControllers\TabView\ISplitContainer.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\TabCollectionLogic.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\TabViewLogic.cs" />
+    <Compile Include="Factories\Concrete\WinForms\TabView\Tab\SimplControl.cs" />
+    <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabCollection.cs" />
+    <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabContent.cs" />
+    <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabPanel.cs" />
     <Compile Include="Factories\ICreator.cs" />
     <Compile Include="Factories\IFactory.cs" />
     <Compile Include="Form1.cs">
@@ -84,6 +90,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TabForm.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\TabView.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="View\WindowTabControl.cs">
       <SubType>Component</SubType>

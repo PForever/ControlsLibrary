@@ -1,4 +1,5 @@
-﻿using ControlsLibrary.AbstractControllers.TabView.Tab;
+﻿using ControlsLibrary.AbstractControllers;
+using ControlsLibrary.AbstractControllers.TabView.Tab;
 using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using System;
 using System.Drawing;
@@ -6,43 +7,68 @@ using System.Windows.Forms;
 
 namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
 {
-    internal class TabContent : Control, ITabContent
+    internal class TabContent : ITabContent
     {
-        public TabContent()
+
+        protected TabContent()
         {
         }
 
-        //public TabContent(Control control)
-        //{
-        //    Control = control;
-        //}
+        public TabContent(Control control)
+        {
+            Control = control;
+        }
 
         public static TabContent CreateDefaultContentol()
         {
             throw new NotImplementedException();
         }
 
-        //object ITabContent.Control { get => Control; set => Control = (Control) value; }
-        //public Control Control { get; set; }
-        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public double Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public double Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        object IControl.Control { get => Control; set => Control = (Control)value; }
+        public Control Control { get; set; }
+
+        public string Name
+        {
+            get => Control.Name;
+            set => Control.Name = value;
+        }
+
+        public Point Location
+        {
+            get => Control.Location;
+            set => Control.Location = value;
+        }
+
+        public bool Visible
+        {
+            get => Control.Visible;
+            set => Control.Visible = value;
+        }
+
+        public int Width
+        {
+            get => Control.Width;
+            set => Control.Width = value;
+        }
+
+        public int Height
+        {
+            get => Control.Height;
+            set => Control.Height = value;
+        }
 
         public void InitializeComponent()
         {
-            throw new NotImplementedException();
         }
 
         public void OnTabDeleted(object sender, TabDeletedEventArgs args)
         {
-            throw new NotImplementedException();
+            Control.Dispose();
         }
 
         public void OnTabSelected(object sender, TabSelectedEventArgs args)
         {
-            throw new NotImplementedException();
+            Control.Select();
         }
 
         #region IDisposable Support
@@ -54,12 +80,8 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                    Control.Dispose();
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
                 disposedValue = true;
             }
         }
