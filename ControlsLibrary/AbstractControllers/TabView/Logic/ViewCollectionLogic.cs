@@ -56,7 +56,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             Panel.InitializeComponent();
         }
 
-        public IList<IControl> Controls { get => Panel.Controls; set => Panel.Controls = value; }
+        public IControlList Controls { get => Panel.Controls; set => Panel.Controls = value; }
         public Orientation Orientation { get => Panel.Orientation; set => Panel.Orientation = value; }
         public TimeSpan TimeOut { get; set; }
         public int Capacity { get; set; }

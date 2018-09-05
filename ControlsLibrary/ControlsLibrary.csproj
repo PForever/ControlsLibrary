@@ -35,6 +35,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,12 +51,13 @@
   <ItemGroup>
     <Compile Include="AbstractControllers\IContainer.cs" />
     <Compile Include="AbstractControllers\IControl.cs" />
+    <Compile Include="AbstractControllers\IControlList.cs" />
     <Compile Include="AbstractControllers\IPanel.cs" />
     <Compile Include="AbstractControllers\TabView\IBufferedCollection.cs" />
     <Compile Include="AbstractControllers\TabView\ISpliter.cs" />
     <Compile Include="AbstractControllers\TabView\ITabCollection.cs" />
     <Compile Include="AbstractControllers\TabView\ITabView.cs" />
-    <Compile Include="AbstractControllers\TabView\Logic\SeparratorLogic.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\SeparatorLogic.cs" />
     <Compile Include="Containers\Position.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabSelectedEventHandler.cs" />
     <Compile Include="Containers\TabKvP.cs" />
@@ -65,16 +69,16 @@
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabsEventArgs.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabMoveHandler.cs" />
     <Compile Include="Containers\Orientation.cs" />
-    <Compile Include="Factories\Concrete\Extantions\ExtantionsFactory.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\ViewCollectionLogic.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\SplitPanelLogic.cs" />
     <Compile Include="Factories\Concrete\WinForms\Containers\ControlList.cs" />
+    <Compile Include="Factories\Concrete\WinForms\TabView\Tab\SimplePanel.cs" />
     <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabViewContainer.cs" />
     <Compile Include="Factories\Concrete\WinFactory.cs" />
     <Compile Include="AbstractControllers\TabView\ISplitContainer.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\TabCollectionLogic.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\TabViewLogic.cs" />
-    <Compile Include="Factories\Concrete\WinForms\TabView\Tab\SimplControl.cs" />
+    <Compile Include="Factories\Concrete\WinForms\TabView\Tab\SimpleControl.cs" />
     <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabCollection.cs" />
     <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabContent.cs" />
     <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabPanel.cs" />
@@ -112,6 +116,7 @@
     <EmbeddedResource Include="TabForm.resx">
       <DependentUpon>TabForm.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using ControlsLibrary.AbstractControllers;
+using ControlsLibrary.Factories.Concrete.WinForms.Containers;
 using Orientation = ControlsLibrary.Containers.Orientation;
 
 namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
@@ -12,65 +13,69 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         private WinFactory _factory;
         public void Dispose()
         {
-            Panel.Dispose();
+            _panel.Dispose();
         }
 
-        object IControl.Control { get => Panel; set => Panel = (Panel) value; }
-        public Panel Panel { get; set; }
+        object IControl.Control
+        {
+            get => _panel;
+            set
+            {
+                _panel = (Panel) value;
+                _controlList = new ControlList(_panel.Controls);
+            }
+        }
+
+        private Panel _panel;
 
         public string Name
         {
-            get => Panel.Name;
-            set => Panel.Name = value;
+            get => _panel.Name;
+            set => _panel.Name = value;
         }
 
         public Point Location
         {
-            get => Panel.Location;
-            set => Panel.Location = value;
+            get => _panel.Location;
+            set => _panel.Location = value;
         }
 
         public bool Visible
         {
-            get => Panel.Visible;
-            set => Panel.Visible = value;
+            get => _panel.Visible;
+            set => _panel.Visible = value;
         }
 
         public int Width
         {
-            get => Panel.Width;
-            set => Panel.Width = value;
+            get => _panel.Width;
+            set => _panel.Width = value;
         }
 
         public int Height
         {
-            get => Panel.Height;
-            set => Panel.Height = value;
+            get => _panel.Height;
+            set => _panel.Height = value;
         }
 
         public void InitializeComponent()
         {
-            throw new System.NotImplementedException();
         }
 
-        public IList<IControl> Controls
+        private ControlList _controlList;
+        public IControlList Controls
         {
-            get => Panel.Controls.Cast<Control>().Select(c => _factory.CreateControl(c)).ToList();
-            set
-            {
-                foreach (var control in value)
-                {
-                    Panel.Controls.Add((Control)control.Control);
-                }
-            }
+            get => _controlList;
+            set => _controlList = (ControlList) value;
         }
 
         public Orientation Orientation { get; set; }
 
         public TabsPanel(Panel panel, WinFactory factory)
         {
-            Panel = panel;
+            _panel = panel;
             _factory = factory;
+            _controlList = new ControlList(_panel.Controls);
         }
     }
 }

@@ -2,6 +2,6 @@
 {
     public interface ISetarator : IControl
     {
-        double RelatavePosition { get; set; }
+        double RelativePosition { get; set; }
     }
 }

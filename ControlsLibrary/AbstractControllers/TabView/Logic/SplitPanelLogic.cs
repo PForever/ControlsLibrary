@@ -8,22 +8,32 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
     internal class SplitPanelLogic : ISplitContainer
     {
         private IPanel _container;
-        private ISetarator _setarator;
+        private ISetarator _separator;
+        private IFactory _factory;
 
-        public SplitPanelLogic(IPanel pnl, IFactory factory)
+        public SplitPanelLogic(IPanel pnl, IFactory factory, double relativePosition)
         {
             this._container = pnl;
-            _setarator = new SeparratorLogic(factory.CreateControl());
+            Controls = pnl.Controls;
+            _separator = new SeparatorLogic(factory.CreateSeparator());
+            _separator.RelativePosition = relativePosition;
+            (IPanel panel1, IPanel panel2) = CreateTwoPanel(Width, Height, Separator.RelativePosition);
+
+            Controls.Add(panel1);
+            Controls.Add(panel2);
+            Controls.Add(_separator);
         }
-        public SplitPanelLogic(IPanel pnl, IControl control)
+
+        public (IPanel, IPanel) CreateTwoPanel(int width, int height, double separatorRelativePosition)
         {
-            this._container = pnl;
-            _setarator = new SeparratorLogic(control);
+            IPanel panel1 = _factory.CreatePanel(new Point(0, 0), width, (int)(height * separatorRelativePosition));
+            IPanel panel2 = _factory.CreatePanel(new Point(0, (int)(height * (1 - separatorRelativePosition))), width, (int)(height * (1 - separatorRelativePosition)));
+            return (panel1, panel2);
         }
 
         public void Dispose()
         {
-            throw new System.NotImplementedException();
+            _container.Dispose();
         }
 
         public object Control { get => _container; set => _container = (IPanel) _container.Control; }
@@ -34,30 +44,30 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public int Height { get => _container.Height; set => _container.Height = value; }
         public void InitializeComponent()
         {
-            throw new System.NotImplementedException();
         }
 
-        public IList<IControl> Controls { get; set; }
+        public IControlList Controls { get; set; }
+        //TODO изменение ориентации => изменение позиций
         public Orientation Orientation { get; set; }
-        public IPanel Panel1 { get; set; }
-        public IPanel Panel2 { get; set; }
 
-        public ISetarator Setarator
+        public IPanel Panel1 { get => (IPanel) Controls[0]; set => Controls[0] = value; }
+        public IPanel Panel2 { get => (IPanel) Controls[1]; set => Controls[1] = value; }
+        public ISetarator Separator
         {
-            get => Setarator;
+            get => (ISetarator) Controls[2];
             set
             {
-                _setarator = value;
-                RatioChanged(value.RelatavePosition);
+                Controls[2] = value;
+                RatioChanged(value.RelativePosition);
             }
         }
 
         public double SplitPosition
         {
-            get => _setarator.RelatavePosition;
+            get => _separator.RelativePosition;
             set
             {
-                _setarator.RelatavePosition = value;
+                _separator.RelativePosition = value;
                 RatioChanged(value);
             }
         }

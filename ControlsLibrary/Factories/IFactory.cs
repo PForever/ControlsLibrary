@@ -1,4 +1,5 @@
-﻿using ControlsLibrary.AbstractControllers;
+﻿using System.Drawing;
+using ControlsLibrary.AbstractControllers;
 using ControlsLibrary.AbstractControllers.TabView;
 using ControlsLibrary.AbstractControllers.TabView.Tab;
 
@@ -12,9 +13,10 @@ namespace ControlsLibrary.Factories
         IControl CreateControl(object control);
         ITabContent CreateTabContent(object content);
         ITabContent CreateTabContent();
-        IControl CreateControl();
+        IControl CreateSeparator();
         ITabCollection CreateTabCollection();
         IBufferedCollection CreateBufferedCollection();
         ISplitContainer CreateSplitContainer();
+        IPanel CreatePanel(Point point, int width, int i);
     }
 }

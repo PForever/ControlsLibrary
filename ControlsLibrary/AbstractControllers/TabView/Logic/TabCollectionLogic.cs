@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using ControlsLibrary.AbstractControllers.TabView.Tab;
 using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using ControlsLibrary.Containers;
@@ -12,7 +13,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
     {
         public object Control { get => _tabsPanel; set => _tabsPanel = (IPanel) value; }
 
-        const int TabsTreshold = 5;
+        const int TabsThreshold = 5;
 
         private IPanel _tabsPanel;
 
@@ -25,9 +26,13 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public int Indent { get; set; }
         public int CurrentTabWidth { get; set; }
         public Orientation Orientation { get => _tabsPanel.Orientation; set => _tabsPanel.Orientation = value; }
-        
-        public IList<ITabPanel> Controls { get => (IList<ITabPanel>)_tabsPanel.Controls; set => _tabsPanel.Controls = (IList<IControl>) value; } 
-        IList<IControl> IContainer.Controls { get => _tabsPanel.Controls; set => _tabsPanel.Controls = value; }
+
+        public IList<ITabPanel> Controls
+        {
+            get => (IList<ITabPanel>) _tabsPanel.Controls.Cast<IPanel>();
+            set => _tabsPanel.Controls = (IControlList) value;
+        }
+        IControlList IContainer.Controls { get => _tabsPanel.Controls; set => _tabsPanel.Controls = value; }
         public string Name { get => _tabsPanel.Name; set => _tabsPanel.Name = value; }
         public Point Location { get => _tabsPanel.Location; set => _tabsPanel.Location = value; }
         public bool Visible { get => _tabsPanel.Visible; set => _tabsPanel.Visible = value; }
@@ -67,7 +72,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
         int CalcWidth()
         {
-            if(Controls.Count < TabsTreshold) return MaxTabWidth;
+            if(Controls.Count < TabsThreshold) return MaxTabWidth;
             CurrentTabWidth = (int) (Width / (double)Controls.Count);
             Render();
             return CurrentTabWidth;

@@ -2,18 +2,18 @@
 
 namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
-    internal class SeparratorLogic : ISetarator
+    internal class SeparatorLogic : ISetarator
     {
         private IControl control;
 
-        public SeparratorLogic(IControl control)
+        public SeparatorLogic(IControl control)
         {
             this.control = control;
         }
 
         public void Dispose()
         {
-            throw new System.NotImplementedException();
+            control.Dispose();
         }
 
         public object Control { get; set; }
@@ -24,9 +24,8 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public int Height { get; set; }
         public void InitializeComponent()
         {
-            throw new System.NotImplementedException();
         }
 
-        public double RelatavePosition { get; set; }
+        public double RelativePosition { get; set; }
     }
 }

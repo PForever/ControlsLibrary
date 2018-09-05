@@ -16,45 +16,40 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
 
         public TabContent(Control control)
         {
-            Control = control;
+            _control = control;
         }
 
-        public static TabContent CreateDefaultContentol()
-        {
-            throw new NotImplementedException();
-        }
-
-        object IControl.Control { get => Control; set => Control = (Control)value; }
-        public Control Control { get; set; }
+        object IControl.Control { get => _control; set => _control = (Control)value; }
+        private Control _control;
 
         public string Name
         {
-            get => Control.Name;
-            set => Control.Name = value;
+            get => _control.Name;
+            set => _control.Name = value;
         }
 
         public Point Location
         {
-            get => Control.Location;
-            set => Control.Location = value;
+            get => _control.Location;
+            set => _control.Location = value;
         }
 
         public bool Visible
         {
-            get => Control.Visible;
-            set => Control.Visible = value;
+            get => _control.Visible;
+            set => _control.Visible = value;
         }
 
         public int Width
         {
-            get => Control.Width;
-            set => Control.Width = value;
+            get => _control.Width;
+            set => _control.Width = value;
         }
 
         public int Height
         {
-            get => Control.Height;
-            set => Control.Height = value;
+            get => _control.Height;
+            set => _control.Height = value;
         }
 
         public void InitializeComponent()
@@ -63,12 +58,12 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
 
         public void OnTabDeleted(object sender, TabDeletedEventArgs args)
         {
-            Control.Dispose();
+            _control.Dispose();
         }
 
         public void OnTabSelected(object sender, TabSelectedEventArgs args)
         {
-            Control.Select();
+            _control.Select();
         }
 
         #region IDisposable Support
@@ -80,7 +75,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
             {
                 if (disposing)
                 {
-                    Control.Dispose();
+                    _control.Dispose();
                 }
                 disposedValue = true;
             }

@@ -4,12 +4,16 @@ using ControlsLibrary.AbstractControllers;
 
 namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
 {
-    public class SimplControl : IControl
+    public class SimpleControl : IControl
     {
-        object IControl.Control { get => Control; set => Control = (Control)value; }
+        object IControl.Control { get => Control; set => Control = (Control) value; }
         public Control Control { get; set; }
 
-        public SimplControl(Control control)
+        protected SimpleControl()
+        {
+        }
+
+        public SimpleControl(Control control)
         {
             Control = control;
         }

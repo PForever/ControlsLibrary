@@ -15,6 +15,7 @@ namespace ControlsLibrary.Containers
             TabContent = tabContent;
         }
 
+        public object Control { get => TabPanel; set => TabPanel = (ITabPanel) value; }
         public string Name { get => TabPanel.Name; set => TabPanel.Name = value; }
         public Point Location { get => TabPanel.Location; set => TabPanel.Location = value; }
         public bool Visible { get => TabPanel.Visible; set => TabPanel.Visible = value; }
