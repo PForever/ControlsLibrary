@@ -16,11 +16,8 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public TabViewLogic(IFactory factory)
         {
             Factory = factory;
-            Container = Factory.CreateSplitContainer();
-            TabCollection = Factory.CreateTabCollection();
-            BufferedCollection = Factory.CreateBufferedCollection();
-            Container.Panel1 = TabCollection;
-            Container.Panel2 = BufferedCollection;
+            
+            InitializeComponent();
         }
         //public TabViewLogic(ISplitContainer splitContainer, IFactory factory)
         //{
@@ -72,6 +69,14 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             Container = Factory.CreateSplitContainer();
             TabCollection = Factory.CreateTabCollection();
             BufferedCollection = Factory.CreateBufferedCollection();
+
+            TabCollection.TabSelected += OnTabSelected;
+
+            Container.Panel1 = TabCollection;
+            Container.Panel2 = BufferedCollection;
+
+            ITabPanel tabPanel = Factory.CreateTabPanel();
+            TabCollection.Add(tabPanel);
         }
 
         public void OnTabSelected(object sender, TabSelectedEventArgs args)

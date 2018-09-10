@@ -48,10 +48,11 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             //TODO возможно требует оптимизации
             int index = Controls.IndexOf(args.TabPanel);
             Controls.RemoveAt(index);
-            Sarfacing(index, Controls.Count - 1, -CalcWidth() - Indent);
+            Surfacing(index, Controls.Count - 1, -CalcWidth() - Indent);
         }
-        void Sarfacing(int from, int to, int width)
+        void Surfacing(int from, int to, int width)
         {
+            if(from < to) return;
             switch (Orientation)
             {
                 case Orientation.Horizontal:
@@ -83,14 +84,14 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             switch (Orientation)
             {
                 case Orientation.Horizontal:
-                    foreach (ITabPanel panel in Controls)
+                    foreach (ITabPanel panel in Controls.Cast<ITabPanel>())
                     {
                         panel.Location = new Point(curPosition, panel.Location.Y);
                         curPosition += (panel.Width = CurrentTabWidth) + Indent;
                     }
                     break;
                 case Orientation.Vertical:
-                    foreach (ITabPanel panel in Controls)
+                    foreach (ITabPanel panel in Controls.Cast<ITabPanel>())
                     {
                         panel.Location = new Point(panel.Location.Y, curPosition);
                         curPosition += (panel.Height = CurrentTabWidth) + Indent;
@@ -133,15 +134,15 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         {
             double position = Orientation == Orientation.Vertical ? args.RequesLocation.Y : args.RequesLocation.X;
             int theMostRightPosition = Width - MaxTabWidth;
-            //проверить как работает маус мув для фоормы
+            //проверить как работает маус мув для формы
             if (position < 0) position = 0;
             if (position > theMostRightPosition) position = theMostRightPosition;
             int index = CalcIndexFromPosition(position);
             int oldIndex = Controls.IndexOf(args.TabPanel);
             SwitchCollectionPositions(oldIndex, index);
             if (oldIndex < index)
-                 Sarfacing(oldIndex, index, -CalcWidth() - Indent);
-            else Sarfacing(index, oldIndex, CalcWidth() + Indent);
+                 Surfacing(oldIndex, index, -CalcWidth() - Indent);
+            else Surfacing(index, oldIndex, CalcWidth() + Indent);
         }
         void SwitchCollectionPositions(int oldindex, int index)
         {
@@ -155,8 +156,17 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
         public void OnTabSelected(object sender, TabSelectedEventArgs args)
         {
-            throw new NotImplementedException();
+            TabSelected.Invoke(this, args);
         }
+
+        private event TabSelectedEventHandler TabSelected;
+
+        event TabSelectedEventHandler ITabCollection.TabSelected
+        {
+            add { this.TabSelected += value; }
+            remove { this.TabSelected -= value; }
+        }
+
         public void InitializeComponent()
         {
             Render();
@@ -166,13 +176,22 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public int IndexOf(ITabPanel item) => Controls.IndexOf(item);
         public void Insert(int index, ITabPanel item)
         {
+            TabBinding(item);
             Controls.Insert(index, item);
-            Sarfacing(Controls.Count - 1, index + 1, CalcWidth() + Indent);
+            Surfacing(Controls.Count - 1, index + 1, CalcWidth() + Indent);
             item.Select();
         }
+
+        private void TabBinding(ITabPanel item)
+        {
+            item.TabSelected += OnTabSelected;
+            item.TabDeleted += OnTabDeleted;
+            item.TabMoved += OnTabMoved;
+        }
+
         public void Add(ITabPanel item)
         {
-
+            Insert(Count, item);
         }
         public bool Contains(ITabPanel item) => Controls.Contains(item);
         public void CopyTo(ITabPanel[] array, int arrayIndex) => Controls.CopyTo(array, arrayIndex);
@@ -188,7 +207,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         {
             Controls[index].Dispose();
             Controls.RemoveAt(index);
-            Sarfacing(index, Controls.Count - 1, -CalcWidth() - Indent);
+            Surfacing(index, Controls.Count - 1, -CalcWidth() - Indent);
             ((ITabPanel)Controls[index]).Select();
         }
         public void Clear()

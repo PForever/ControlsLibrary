@@ -57,6 +57,7 @@
     <Compile Include="AbstractControllers\TabView\ISpliter.cs" />
     <Compile Include="AbstractControllers\TabView\ITabCollection.cs" />
     <Compile Include="AbstractControllers\TabView\ITabView.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\BufferedPage.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\SeparatorLogic.cs" />
     <Compile Include="Containers\Position.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabSelectedEventHandler.cs" />

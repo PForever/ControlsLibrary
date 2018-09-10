@@ -15,10 +15,15 @@ namespace ControlsLibrary.AbstractControllers.TabView
         void OnTabDeleted(object sender, TabDeletedEventArgs args);
         void OnTabMoved(object sender, TabMovedEventArgs args);
         void OnTabSelected(object sender, TabSelectedEventArgs args);
+        event TabSelectedEventHandler TabSelected;
+
         #endregion
+
         #region CollectionProperty
+
         //TODO инкапсулировать
         //IList<TabKvP> Tabs { get; set; }
+
         #endregion
     }
 }

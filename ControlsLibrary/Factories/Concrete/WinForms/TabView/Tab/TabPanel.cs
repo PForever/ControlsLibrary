@@ -16,6 +16,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
     { 
         private WinFactory _factory;
         private Panel _panel;
+        public ITabContent TabContent { get; }
         protected TabPanel()
         {
         }
@@ -24,6 +25,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         {
             _factory = factory;
             _panel = panel;
+            TabContent = _factory.CreateTabContent();
         }
 
         object IControl.Control { get => _panel; /*set => _panel = (Panel)value;*/ }
@@ -84,7 +86,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         public void Select()
         {
             if (TabSelected == null) throw new Exception("Content not found");
-            TabSelected.Invoke(this, new TabSelectedEventArgs(this, null));
+            TabSelected.Invoke(this, new TabSelectedEventArgs(this, TabContent));
         }
 
         public void Dispose()

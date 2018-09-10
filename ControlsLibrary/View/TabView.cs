@@ -13,6 +13,7 @@ namespace ControlsLibrary.View
         private Panel _tabPanel;
         private Panel _panel;
         private Panel _viewPanel;
+        private Label _separator;
         private ITabView _tabView;
 
         public TabView()
@@ -21,17 +22,19 @@ namespace ControlsLibrary.View
         }
         public void InitializeComponent()
         {
-            _tabContent = new Panel();
-            _tabPanel = new Panel();
-            _panel = new Panel();
-            _viewPanel = new Panel();
+            BorderStyle = BorderStyle.Fixed3D;
+            _tabContent = new Panel{BorderStyle = BorderStyle.FixedSingle};
+            _tabPanel = new Panel() { BorderStyle = BorderStyle.FixedSingle };
+            _panel = new Panel() { BorderStyle = BorderStyle.FixedSingle };
+            _viewPanel = new Panel() { BorderStyle = BorderStyle.FixedSingle };
+            _separator = new Label {BackColor = Color.Black};
 
             WinFactory factory = new WinFactory
             {
                 DefaultTabContent = _tabContent,
                 DefaultTabPanel = _tabPanel,
                 DefaultTabsPanel = _panel,
-                DefaultSeparator = new Label { BackColor = Color.Black },
+                DefaultSeparator = _separator,
                 DefaultSplitPanel = this,
                 DefaultViewPanel = _viewPanel
             };
