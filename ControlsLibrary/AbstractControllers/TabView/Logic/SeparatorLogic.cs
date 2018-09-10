@@ -4,24 +4,24 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
     internal class SeparatorLogic : ISetarator
     {
-        private IControl control;
+        public IControl _control { get; set; }
 
         public SeparatorLogic(IControl control)
         {
-            this.control = control;
+            this._control = control;
         }
 
         public void Dispose()
         {
-            control.Dispose();
+            _control.Dispose();
         }
 
-        public object Control { get; set; }
-        public string Name { get; set; }
-        public Point Location { get; set; }
-        public bool Visible { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public object Control { get => _control.Control; }
+        public string Name { get => _control.Name; set => _control.Name = value; }
+        public Point Location { get => _control.Location; set => _control.Location = value; }
+        public bool Visible { get => _control.Visible; set => _control.Visible = value; }
+        public int Width { get => _control.Width; set => _control.Width = value; }
+        public int Height { get => _control.Height; set => _control.Height = value; }
         public void InitializeComponent()
         {
         }

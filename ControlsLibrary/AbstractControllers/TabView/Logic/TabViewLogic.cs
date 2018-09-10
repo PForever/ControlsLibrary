@@ -9,7 +9,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
     class TabViewLogic : ITabView, ICreator
     {
-        public object Control { get => Container; set => Container = (ISplitContainer) value; }
+        public object Control { get => Container.Control; }
 
         public ISplitContainer Container;
 

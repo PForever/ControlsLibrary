@@ -19,7 +19,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
             _control = control;
         }
 
-        object IControl.Control { get => _control; set => _control = (Control)value; }
+        object IControl.Control { get => _control; /*set => _control = (Control)value;*/ }
         private Control _control;
 
         public string Name

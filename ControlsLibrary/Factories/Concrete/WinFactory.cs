@@ -7,11 +7,14 @@ using System.Collections.Generic;
 using ControlsLibrary.AbstractControllers;
 using ControlsLibrary.AbstractControllers.TabView.Logic;
 using System.Drawing;
+using ControlsLibrary.Factories.Concrete.WinForms.WinHelp;
 
 namespace ControlsLibrary.Factories.Concrete
 {
+
     public class WinFactory : IFactory
     {
+        #region WinForms
         #region Default
         public const double DefaultSep = 0.5;
 
@@ -20,41 +23,55 @@ namespace ControlsLibrary.Factories.Concrete
         public Panel DefaultTabPanel { get; set; }
         public Panel DefaultSplitPanel { get; set; }
         public Control DefaultSeparator { get; set; }
-        public Panel DefaultPanel { get; set; }
+        public Panel DefaultTabsPanel { get; set; }
 
         #endregion
 
+
+        private T TypeCheck<T>(object obj)
+        {
+            if(obj == null) throw new ArgumentNullException();
+            if (obj is T res) return res;
+            throw new ArgumentException();
+        }
+
         #region Copy
-        private IPanel CopyPanel(Panel panel)
+        private IPanel CopyPanel(object obj)
         {
-            return new SimplePanel(new Panel(), this);
+            Panel panel = TypeCheck<Panel>(obj);
+            return new SimplePanel(panel.Clone(), this);
         }
 
-        private ITabContent CopyTabContent(Panel control)
+        private ITabContent CopyTabContent(object obj)
         {
-            return CreateTabContent(new Panel());
+            Control control = TypeCheck<Control>(obj);
+            return CreateTabContent(control.Clone());
         }
-        private ITabPanel CopyTabPanel(Panel panel)
+        private ITabPanel CopyTabPanel(object obj)
         {
-            return CreateTabPanel(new Panel());
+            Panel panel = TypeCheck<Panel>(obj);
+            return CreateTabPanel(panel.Clone());
         }
 
-        private IBufferedCollection CopyViewPanel(object panel)
+        private IBufferedCollection CopyViewPanel(object obj)
         {
-            IPanel pnl = CreatePanel(new Panel());
+            Panel panel = TypeCheck<Panel>(obj);
+            IPanel pnl = CreatePanel(panel.Clone());
             return new ViewCollectionLogic(pnl);
         }
 
-        private ISplitContainer CopySplitPanel(object panel)
+        private ISplitContainer CopySplitPanel(object obj)
         {
-            IPanel pnl = CreatePanel(new Panel());
+            Panel panel = TypeCheck<Panel>(obj);
+            IPanel pnl = CreatePanel(panel.Clone());
             return new SplitPanelLogic(pnl, this, DefaultSep);
         }
-        private IControl CopyControl(Control control)
+        private IControl CopyControl(object obj)
         {
-            return new SimpleControl(new Control());
+            Control control = TypeCheck<Control>(obj);
+            return new SimpleControl(control.Clone());
         }
-
+        #endregion
         #endregion
 
         public ITabContent CreateTabContent(object content)
@@ -67,13 +84,11 @@ namespace ControlsLibrary.Factories.Concrete
             return CopyTabContent(DefaultTabContent);
         }
 
-        public IPanel CreatePanel(Point location, int width, int height)
+        public void SetPanelProperty(IPanel panel, Point location, int width, int height)
         {
-            IPanel panel = CopyPanel(DefaultPanel);
             panel.Location = location;
             panel.Width = width;
             panel.Height = height;
-            return panel;
         }
 
         public IControl CreateSeparator()
@@ -81,18 +96,29 @@ namespace ControlsLibrary.Factories.Concrete
             return CopyControl(DefaultSeparator);
         }
 
-
         public ITabCollection CreateTabCollection()
         {
             IPanel panel = CopyPanel(DefaultTabPanel);
             return new TabCollectionLogic(panel);
         }
 
-
-        public IControl CreateControl(object control)
+        public IControl CreateControl(object obj)
         {
-            if(control == null) throw new ArgumentNullException();
-            return control is IControl ? (IControl) control : new SimpleControl((Control) control);
+            Panel control = TypeCheck<Panel>(obj);
+            return new SimpleControl(control);
+        }
+
+        public IPanel CreatePanel(object obj)
+        {
+            Panel panel = TypeCheck<Panel>(obj);
+            return new SimplePanel(panel, this);
+        }
+
+        public ITabCollection CreateTabCollection(Point location, int width, int height)
+        {
+            ITabCollection tabCollection = CreateTabCollection(DefaultTabsPanel);
+            SetPanelProperty(tabCollection, location, width, height);
+            return tabCollection;
         }
 
         public ITabCollection CreateTabCollection(object panel)
@@ -102,10 +128,6 @@ namespace ControlsLibrary.Factories.Concrete
             return new TabCollectionLogic(pnl);
         }
 
-        public IPanel CreatePanel(Panel panel)
-        {
-            return new SimplePanel(panel, this);
-        }
 
         public ITabPanel CreateTabPanel()
         {
@@ -122,6 +144,12 @@ namespace ControlsLibrary.Factories.Concrete
             return panel;
         }
 
+        public IBufferedCollection CreateBufferedCollection(Point location, int width, int height)
+        {
+            IBufferedCollection viewPanel = CreateBufferedCollection(DefaultViewPanel);
+            SetPanelProperty(viewPanel, location, width, height);
+            return viewPanel;
+        }
         public IBufferedCollection CreateBufferedCollection(object panel)
         {
             if (panel is IBufferedCollection) return (IBufferedCollection) panel;
@@ -132,7 +160,6 @@ namespace ControlsLibrary.Factories.Concrete
         {
             return CopyViewPanel(DefaultViewPanel);
         }
-
 
         public ISplitContainer CreateSplitContainer(object splitContainer)
         {

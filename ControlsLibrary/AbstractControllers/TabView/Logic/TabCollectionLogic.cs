@@ -11,7 +11,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
     class TabCollectionLogic : ITabCollection
     {
-        public object Control { get => _tabsPanel; set => _tabsPanel = (IPanel) value; }
+        public object Control { get => _tabsPanel.Control; }
 
         const int TabsThreshold = 5;
 
@@ -27,10 +27,10 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public int CurrentTabWidth { get; set; }
         public Orientation Orientation { get => _tabsPanel.Orientation; set => _tabsPanel.Orientation = value; }
 
-        public IList<ITabPanel> Controls
+        public IControlList Controls
         {
-            get => (IList<ITabPanel>) _tabsPanel.Controls.Cast<IPanel>();
-            set => _tabsPanel.Controls = (IControlList) value;
+            get =>  _tabsPanel.Controls;
+            set => _tabsPanel.Controls = value;
         }
         IControlList IContainer.Controls { get => _tabsPanel.Controls; set => _tabsPanel.Controls = value; }
         public string Name { get => _tabsPanel.Name; set => _tabsPanel.Name = value; }
@@ -41,7 +41,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public int Count => Controls.Count;
         public bool IsReadOnly => Controls.IsReadOnly;
 
-        ITabPanel IList<ITabPanel>.this[int index] { get => Controls[index]; set => Controls[index] = value; }
+        ITabPanel IList<ITabPanel>.this[int index] { get => (ITabPanel)Controls[index]; set => Controls[index] = value; }
 
         public void OnTabDeleted(object sender, TabDeletedEventArgs args)
         {
@@ -103,7 +103,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
         protected void Render(int index)
         {
-            ITabPanel panel = Controls[index];
+            ITabPanel panel = (ITabPanel) Controls[index];
             int curPosition = index * (CurrentTabWidth + Indent);
             switch (Orientation)
             {
@@ -145,7 +145,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
         void SwitchCollectionPositions(int oldindex, int index)
         {
-            ITabPanel temp = Controls[oldindex];
+            ITabPanel temp = (ITabPanel) Controls[oldindex];
             Controls[oldindex] = Controls[index];
             Controls[index] = temp;
         }
@@ -189,7 +189,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             Controls[index].Dispose();
             Controls.RemoveAt(index);
             Sarfacing(index, Controls.Count - 1, -CalcWidth() - Indent);
-            Controls[index].Select();
+            ((ITabPanel)Controls[index]).Select();
         }
         public void Clear()
         {
@@ -200,7 +200,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
         IEnumerator<ITabPanel> IEnumerable<ITabPanel>.GetEnumerator()
         {
-            return Controls.GetEnumerator();
+            return Controls.Cast<ITabPanel>().GetEnumerator();
         }
 
         public IEnumerator GetEnumerator()

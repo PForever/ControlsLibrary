@@ -42,7 +42,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
         {
             if(item == null) throw new ArgumentNullException();
             Controls.Add((Control)item.Control);
-            Collection.Add(_factory.CreateControl(item));
+            Collection.Add(item);
         }
 
         public void Clear()

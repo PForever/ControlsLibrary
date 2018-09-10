@@ -19,11 +19,11 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         object IControl.Control
         {
             get => _panel;
-            set
-            {
-                _panel = (Panel) value;
-                _controlList = new ControlList(_panel.Controls);
-            }
+            //set
+            //{
+            //    _panel = (Panel) value;
+            //    _controlList = new ControlList(_panel.Controls);
+            //}
         }
 
         private Panel _panel;

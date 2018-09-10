@@ -26,7 +26,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
             _panel = panel;
         }
 
-        object IControl.Control { get => _panel; set => _panel = (Panel)value; }
+        object IControl.Control { get => _panel; /*set => _panel = (Panel)value;*/ }
         public bool IsSelected { get; set; }
         public Orientation Orientation { get; set; }
         private ControlList _controlList;

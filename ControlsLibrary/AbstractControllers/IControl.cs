@@ -9,7 +9,7 @@ namespace ControlsLibrary.AbstractControllers
 {
     public interface IControl : IDisposable
     {
-        object Control { get; set; }
+        object Control { get; }
         string Name { get; set; }
         Point Location { get; set; }
         bool Visible { get; set; }

@@ -13,11 +13,12 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public SplitPanelLogic(IPanel pnl, IFactory factory, double relativePosition)
         {
+            _factory = factory;
             this._container = pnl;
             Controls = pnl.Controls;
             _separator = new SeparatorLogic(factory.CreateSeparator());
             _separator.RelativePosition = relativePosition;
-            (IPanel panel1, IPanel panel2) = CreateTwoPanel(Width, Height, Separator.RelativePosition);
+            (IPanel panel1, IPanel panel2) = CreateTwoPanel(Width, Height, _separator.RelativePosition);
 
             Controls.Add(panel1);
             Controls.Add(panel2);
@@ -26,8 +27,8 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public (IPanel, IPanel) CreateTwoPanel(int width, int height, double separatorRelativePosition)
         {
-            IPanel panel1 = _factory.CreatePanel(new Point(0, 0), width, (int)(height * separatorRelativePosition));
-            IPanel panel2 = _factory.CreatePanel(new Point(0, (int)(height * (1 - separatorRelativePosition))), width, (int)(height * (1 - separatorRelativePosition)));
+            IPanel panel1 = _factory.CreateTabCollection(new Point(0, 0), width, (int)(height * separatorRelativePosition));
+            IPanel panel2 = _factory.CreateBufferedCollection(new Point(0, (int)(height * (1 - separatorRelativePosition))), width, (int)(height * (1 - separatorRelativePosition)));
             return (panel1, panel2);
         }
 
@@ -36,7 +37,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             _container.Dispose();
         }
 
-        public object Control { get => _container; set => _container = (IPanel) _container.Control; }
+        public object Control { get => _container.Control; }
         public string Name { get => _container.Name; set => _container.Name = value; }
         public Point Location { get => _container.Location; set => _container.Location = value; }
         public bool Visible { get => _container.Visible; set => _container.Visible = value; }

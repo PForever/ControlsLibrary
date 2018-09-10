@@ -8,8 +8,8 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
     internal class ViewCollectionLogic : IBufferedCollection
     {
-        object IControl.Control { get => Panel; set => Panel = (IPanel) value; }
-        public IPanel Panel;
+        object IControl.Control { get => Panel.Control; }
+        public IPanel Panel { get; set; }
 
         public ViewCollectionLogic(IPanel pnl)
         {
