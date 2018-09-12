@@ -10,24 +10,44 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
     class TabViewLogic : ITabView, ICreator
     {
         public object Control { get => Container.Control; }
-
+        protected event SizeChangedHandler SizeChanged;
+        protected event LocationChangedHandler LocationChanged;
         public ISplitContainer Container;
+        private ITabCollection _tabCollection;
+        private IBufferedCollection _bufferedCollection;
 
         public TabViewLogic(IFactory factory)
         {
             Factory = factory;
-            
             InitializeComponent();
         }
-        //public TabViewLogic(ISplitContainer splitContainer, IFactory factory)
-        //{
-        //    Factory = factory;
-        //    Container = splitContainer;
-        //}
 
         public Position Position { get; set; }
-        public ITabCollection TabCollection { get; set; }
-        public IBufferedCollection BufferedCollection { get; set; }
+
+        public ITabCollection TabCollection
+        {
+            get => _tabCollection;
+            set
+            {
+                _tabCollection = value;
+
+                LocationChanged += _tabCollection.OnParentLocationChanged;
+                SizeChanged += _tabCollection.OnParentSizeChanged;
+            }
+        }
+
+        public IBufferedCollection BufferedCollection
+        {
+            get => _bufferedCollection;
+            set
+            {
+                _bufferedCollection = value;
+                
+                LocationChanged += _bufferedCollection.OnParentLocationChanged;
+                SizeChanged += _bufferedCollection.OnParentSizeChanged;
+            }
+        }
+
         public IControlList Controls { get; set; }
         Orientation IPanel.Orientation { get; set; }
 
@@ -42,7 +62,22 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public Point Location
         {
             get => Container.Location;
-            set => Container.Location = value;
+            set
+            {
+                Point oldValue = Container.Location;
+                Container.Location = value;
+                LocationChanged?.Invoke(this, new LocationChangedHandlerArgs(value, oldValue));
+            }
+        }
+
+        public void OnControlLocationChanged(Point oldLocation, Point newLocation)
+        {
+            LocationChanged?.Invoke(this, new LocationChangedHandlerArgs(newLocation, oldLocation));
+        }
+
+        public void OnControlSizeChanged(Size oldSize, Size newSize)
+        {
+            SizeChanged?.Invoke(this, new SizeChangedHandlerArgs(newSize, oldSize));
         }
 
         public bool Visible
@@ -57,7 +92,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             get => Container.Width;
             set => Container.Width = value;
         }
-
+        
         public int Height
         {
             get => Container.Height;
@@ -66,7 +101,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public void InitializeComponent()
         {
-            Container = Factory.CreateSplitContainer();
+            Container = Factory.CreateSplitContainer(false);
             TabCollection = Factory.CreateTabCollection();
             BufferedCollection = Factory.CreateBufferedCollection();
 
@@ -74,7 +109,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
             Container.Panel1 = TabCollection;
             Container.Panel2 = BufferedCollection;
-
+            Container.RelativePosition = 10;
             ITabPanel tabPanel = Factory.CreateTabPanel();
             TabCollection.Add(tabPanel);
         }
@@ -96,4 +131,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             BufferedCollection?.Dispose();
         }
     }
+
+    internal delegate void LocationChangedHandler(object sender, LocationChangedHandlerArgs args);
+    internal delegate void SizeChangedHandler(object sender, SizeChangedHandlerArgs args);
 }

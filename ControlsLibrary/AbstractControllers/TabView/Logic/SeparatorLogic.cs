@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using ControlsLibrary.Containers;
 
 namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
@@ -6,9 +7,11 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
     {
         public IControl _control { get; set; }
 
-        public SeparatorLogic(IControl control)
+        public SeparatorLogic(IControl control, int height, double relativePosition)
         {
             this._control = control;
+            RelativePosition = relativePosition;
+            Location = new Point(0, (int)(height*relativePosition));
         }
 
         public void Dispose()

@@ -75,11 +75,21 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                 if (_current != null) //TODO заменить на заглушку
                 {
                     _buffer.Start(_current);
-                    _current.Visible = false;
+                    //_current.Visible = false;
+                    Controls.Remove(_current);
                 }
                 _current = value;
-                _current.Visible = true;
+                //_current.Visible = true;
+                Controls.Add(_current);
             }
+        }
+
+        public void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args)
+        {
+        }
+
+        public void OnParentSizeChanged(object sender, SizeChangedHandlerArgs args)
+        {
         }
     }
 }

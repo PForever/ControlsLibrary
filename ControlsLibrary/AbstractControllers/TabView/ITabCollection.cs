@@ -3,6 +3,7 @@ using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using ControlsLibrary.Containers;
 using System.Collections.Generic;
 using System.Drawing;
+using ControlsLibrary.AbstractControllers.TabView.Logic;
 
 namespace ControlsLibrary.AbstractControllers.TabView
 {
@@ -25,5 +26,8 @@ namespace ControlsLibrary.AbstractControllers.TabView
         //IList<TabKvP> Tabs { get; set; }
 
         #endregion
+
+        void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args);
+        void OnParentSizeChanged(object sender, SizeChangedHandlerArgs args);
     }
 }

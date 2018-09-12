@@ -2,6 +2,7 @@
 using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using ControlsLibrary.Containers;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace ControlsLibrary.AbstractControllers.TabView
 {
@@ -13,5 +14,7 @@ namespace ControlsLibrary.AbstractControllers.TabView
         IBufferedCollection BufferedCollection { get; set; }
         void OnTabSelected(object sender, TabSelectedEventArgs args);
         void Show(ITabContent tabContent = null);
+        void OnControlLocationChanged(Point oldLocation, Point newLocation);
+        void OnControlSizeChanged(Size oldSize, Size newSize);
     }
 }

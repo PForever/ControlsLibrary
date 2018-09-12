@@ -160,6 +160,13 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
 
         private event TabSelectedEventHandler TabSelected;
+        public void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args)
+        {
+        }
+
+        public void OnParentSizeChanged(object sender, SizeChangedHandlerArgs args)
+        {
+        }
 
         event TabSelectedEventHandler ITabCollection.TabSelected
         {

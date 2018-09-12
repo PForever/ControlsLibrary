@@ -3,10 +3,12 @@ using System.Windows.Forms;
 using ControlsLibrary.AbstractControllers.TabView.Tab;
 using ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using ControlsLibrary.AbstractControllers;
 using ControlsLibrary.AbstractControllers.TabView.Logic;
 using System.Drawing;
+using ControlsLibrary.Factories.Concrete.WinForms;
 using ControlsLibrary.Factories.Concrete.WinForms.WinHelp;
 
 namespace ControlsLibrary.Factories.Concrete
@@ -21,7 +23,7 @@ namespace ControlsLibrary.Factories.Concrete
         public Panel DefaultTabContent { get; set; }
         public Panel DefaultViewPanel { get; set; }
         public Panel DefaultTabPanel { get; set; }
-        public Panel DefaultSplitPanel { get; set; }
+        public TableLayoutPanel DefaultSplitPanel { get; set; }
         public Control DefaultSeparator { get; set; }
         public Panel DefaultTabsPanel { get; set; }
 
@@ -62,9 +64,8 @@ namespace ControlsLibrary.Factories.Concrete
 
         private ISplitContainer CopySplitPanel(object obj)
         {
-            Panel panel = TypeCheck<Panel>(obj);
-            IPanel pnl = CreatePanel(panel.Clone());
-            return new SplitPanelLogic(pnl, this, DefaultSep);
+            TableLayoutPanel panel = TypeCheck<TableLayoutPanel>(obj);
+            return new TableSplitContainer(panel);//SplitPanelLogic(pnl, this, DefaultSep);
         }
         private IControl CopyControl(object obj)
         {
@@ -84,27 +85,22 @@ namespace ControlsLibrary.Factories.Concrete
             return CopyTabContent(DefaultTabContent);
         }
 
-        public void SetPanelProperty(IPanel panel, Point location, int width, int height)
-        {
-            panel.Location = location;
-            panel.Width = width;
-            panel.Height = height;
-        }
+        //public void SetPanelProperty(IPanel panel, Point location, int width, int height)
+        //{
+        //    panel.Location = location;
+        //    panel.Width = width;
+        //    panel.Height = height;
+        //}
 
-        public IControl CreateSeparator()
+        public ISetarator CreateSeparator()
         {
-            return CopyControl(DefaultSeparator);
-        }
-
-        public ITabCollection CreateTabCollection()
-        {
-            IPanel panel = CopyPanel(DefaultTabPanel);
-            return new TabCollectionLogic(panel);
+            IControl separator = CopyControl(DefaultSeparator);
+            return new SeparatorLogic(separator, DefaultSplitPanel.Height, DefaultSep);
         }
 
         public IControl CreateControl(object obj)
         {
-            Panel control = TypeCheck<Panel>(obj);
+            Control control = TypeCheck<Control>(obj);
             return new SimpleControl(control);
         }
 
@@ -114,10 +110,11 @@ namespace ControlsLibrary.Factories.Concrete
             return new SimplePanel(panel, this);
         }
 
-        public ITabCollection CreateTabCollection(Point location, int width, int height)
+        public ITabCollection CreateTabCollection()
         {
             ITabCollection tabCollection = CreateTabCollection(DefaultTabsPanel);
-            SetPanelProperty(tabCollection, location, width, height);
+            ((Panel)tabCollection.Control).Dock = DockStyle.Fill;
+            //SetPanelProperty(tabCollection, location, width, height);
             return tabCollection;
         }
 
@@ -144,10 +141,10 @@ namespace ControlsLibrary.Factories.Concrete
             return panel;
         }
 
-        public IBufferedCollection CreateBufferedCollection(Point location, int width, int height)
+        public IBufferedCollection CreateBufferedCollection()
         {
             IBufferedCollection viewPanel = CreateBufferedCollection(DefaultViewPanel);
-            SetPanelProperty(viewPanel, location, width, height);
+            //SetPanelProperty(viewPanel, location, width, height);
             return viewPanel;
         }
         public IBufferedCollection CreateBufferedCollection(object panel)
@@ -156,34 +153,40 @@ namespace ControlsLibrary.Factories.Concrete
             IPanel pnl = CreatePanel((Panel)panel);
             return new ViewCollectionLogic(pnl);
         }
-        public IBufferedCollection CreateBufferedCollection()
-        {
-            return CopyViewPanel(DefaultViewPanel);
-        }
 
         public ISplitContainer CreateSplitContainer(object splitContainer)
         {
-            IPanel panel = CreatePanel((Panel) splitContainer);
-            return new SplitPanelLogic(panel, this, DefaultSep);
+            //IPanel panel = CreatePanel((Panel) splitContainer);
+            TableLayoutPanel table = TypeCheck<TableLayoutPanel>(splitContainer);
+            return new TableSplitContainer(table); //new SplitPanelLogic(panel, this, DefaultSep);
         }
-        public ISplitContainer CreateSplitContainer()
+        public ISplitContainer CreateSplitContainer(bool copy = true)
         {
-            return CopySplitPanel(DefaultSplitPanel);
+            return copy ? CopySplitPanel(DefaultSplitPanel) : CreateSplitContainer(DefaultSplitPanel);
         }
 
-        public IEnumerable<IControl> CreateControls(IEnumerable<object> controls)
+        public IEnumerable<IControl> CreateControls(IEnumerable controls)
         {
             foreach (object control in controls)
             {
-                yield return CreateControl(controls);
+                yield return CreateControl(control);
             }
         }
 
-        public IControl CreateSeparator(int height, double defaultSep)
+        public ISetarator CreateSeparator(int height, double defaultSep)
         {
             IControl separator = new SimpleControl(DefaultSeparator);
-            separator.Location = new Point(0, (int)(height * defaultSep));
-            return separator;
+            return new SeparatorLogic(separator, height, defaultSep);
+        }
+
+        public ITabView CreateTabView()
+        {
+            ITabView tabView = new TabViewLogic(this);
+            Panel panel = (Panel) tabView.Control;
+            panel.LocationChanged += (sender, arg) =>
+                tabView.OnControlLocationChanged(Point.Empty, panel.Location);
+            panel.SizeChanged += (sender, arg) => tabView.OnControlSizeChanged(Size.Empty, panel.Size);
+            return tabView;
         }
 
         //public (IPanel, IPanel) CreateTwoPanel(int width, int height, double separatorRelativePosition)

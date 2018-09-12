@@ -26,7 +26,8 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
         {
             _factory = factory;
             Controls = controls;
-            Collection = Controls.Cast<IControl>().ToList();
+            
+            Collection = _factory.CreateControls(Controls).ToList();
         }
         public IEnumerator<IControl> GetEnumerator()
         {

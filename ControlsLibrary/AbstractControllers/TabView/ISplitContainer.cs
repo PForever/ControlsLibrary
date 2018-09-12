@@ -4,6 +4,6 @@
     {
         IPanel Panel1 { get; set; }
         IPanel Panel2 { get; set; }
-        ISetarator Separator { get; set; }
+        int RelativePosition { get; set; }
     }
 }

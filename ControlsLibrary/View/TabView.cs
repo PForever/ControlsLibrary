@@ -7,7 +7,7 @@ using ControlsLibrary.Factories.Concrete;
 
 namespace ControlsLibrary.View
 {
-    public class TabView : Panel
+    public class TabView : TableLayoutPanel
     {
         private Panel _tabContent;
         private Panel _tabPanel;
@@ -23,8 +23,8 @@ namespace ControlsLibrary.View
         public void InitializeComponent()
         {
             BorderStyle = BorderStyle.Fixed3D;
-            _tabContent = new Panel{BorderStyle = BorderStyle.FixedSingle};
-            _tabPanel = new Panel() { BorderStyle = BorderStyle.FixedSingle };
+            _tabContent = new Panel{BorderStyle = BorderStyle.FixedSingle, BackgroundImage = Image.FromFile("C:\\Users\\st804476.RECTORAT\\Pictures\\wallhaven-181730.jpg"), BackgroundImageLayout = ImageLayout.Stretch};
+            _tabPanel = new Panel() { BorderStyle = BorderStyle.FixedSingle, BackgroundImage = Image.FromFile("C:\\Users\\st804476.RECTORAT\\Pictures\\393678.jpg"), BackgroundImageLayout = ImageLayout.Stretch };
             _panel = new Panel() { BorderStyle = BorderStyle.FixedSingle };
             _viewPanel = new Panel() { BorderStyle = BorderStyle.FixedSingle };
             _separator = new Label {BackColor = Color.Black};
@@ -38,8 +38,8 @@ namespace ControlsLibrary.View
                 DefaultSplitPanel = this,
                 DefaultViewPanel = _viewPanel
             };
+
             _tabView = new TabViewLogic(factory);
-            _tabView.InitializeComponent();
         }
     }
 }
