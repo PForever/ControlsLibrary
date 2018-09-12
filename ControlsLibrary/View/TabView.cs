@@ -13,7 +13,6 @@ namespace ControlsLibrary.View
         private Panel _tabPanel;
         private Panel _panel;
         private Panel _viewPanel;
-        private Label _separator;
         private ITabView _tabView;
 
         public TabView()
@@ -22,19 +21,20 @@ namespace ControlsLibrary.View
         }
         public void InitializeComponent()
         {
+            this.Dock = DockStyle.Fill;
+            this.BackColor = Color.Aqua;
+
             BorderStyle = BorderStyle.Fixed3D;
-            _tabContent = new Panel{BorderStyle = BorderStyle.FixedSingle, BackgroundImage = Image.FromFile("C:\\Users\\st804476.RECTORAT\\Pictures\\wallhaven-181730.jpg"), BackgroundImageLayout = ImageLayout.Stretch};
-            _tabPanel = new Panel() { BorderStyle = BorderStyle.FixedSingle, BackgroundImage = Image.FromFile("C:\\Users\\st804476.RECTORAT\\Pictures\\393678.jpg"), BackgroundImageLayout = ImageLayout.Stretch };
-            _panel = new Panel() { BorderStyle = BorderStyle.FixedSingle };
-            _viewPanel = new Panel() { BorderStyle = BorderStyle.FixedSingle };
-            _separator = new Label {BackColor = Color.Black};
+            _tabContent = new Panel{BorderStyle = BorderStyle.FixedSingle, BackColor = Color.GreenYellow/*, BackgroundImage = Image.FromFile("C:\\Users\\st804476.RECTORAT\\Pictures\\wallhaven-181730.jpg")*/, BackgroundImageLayout = ImageLayout.Stretch};
+            _tabPanel = new Panel() { BorderStyle = BorderStyle.FixedSingle, BackColor = Color.Green/*, BackgroundImage = Image.FromFile("C:\\Users\\st804476.RECTORAT\\Pictures\\393678.jpg")*/, BackgroundImageLayout = ImageLayout.Stretch};
+            _panel = new Panel() { BorderStyle = BorderStyle.FixedSingle, BackColor = Color.Blue};
+            _viewPanel = new Panel() { BorderStyle = BorderStyle.FixedSingle, BackColor = Color.Red/*, Dock = DockStyle.Fill*/};
 
             WinFactory factory = new WinFactory
             {
                 DefaultTabContent = _tabContent,
                 DefaultTabPanel = _tabPanel,
                 DefaultTabsPanel = _panel,
-                DefaultSeparator = _separator,
                 DefaultSplitPanel = this,
                 DefaultViewPanel = _viewPanel
             };

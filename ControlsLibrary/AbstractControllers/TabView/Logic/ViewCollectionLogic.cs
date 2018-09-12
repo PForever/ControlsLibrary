@@ -81,6 +81,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                 _current = value;
                 //_current.Visible = true;
                 Controls.Add(_current);
+                _current.Featch = true;
             }
         }
 

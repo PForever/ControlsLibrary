@@ -88,6 +88,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
                         _table.Controls.Add((Panel)value.Control, 1, 0);
                     break;
                 }
+                ((Panel) value.Control).Dock = DockStyle.Fill;
             }
         }
 

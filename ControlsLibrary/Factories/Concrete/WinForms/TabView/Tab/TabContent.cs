@@ -65,6 +65,12 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         {
             _control.Select();
         }
+        
+        public bool Featch
+        {
+            get => _control.Dock == DockStyle.Fill;
+            set => _control.Dock = value ? DockStyle.Fill : DockStyle.Left;
+        }
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
