@@ -13,11 +13,11 @@ namespace ControlsLibrary.AbstractControllers.TabView
         int MaxTabWidth { get; }
         #endregion
         #region TabEvents
-        void OnTabDeleted(object sender, TabDeletedEventArgs args);
+        void OnTabDeleted(object sender, TabEventArgs args);
         void OnTabMoved(object sender, TabMovedEventArgs args);
-        void OnTabSelected(object sender, TabSelectedEventArgs args);
+        void OnTabSelected(object sender, TabEventArgs args);
         event TabSelectedEventHandler TabSelected;
-
+        event TabSelectedEventHandler ButtonAddClickedHandler;
         #endregion
 
         #region CollectionProperty
@@ -29,5 +29,7 @@ namespace ControlsLibrary.AbstractControllers.TabView
 
         void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args);
         void OnParentSizeChanged(object sender, SizeChangedHandlerArgs args);
+        void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs);
     }
+
 }

@@ -1,7 +1,9 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using ControlsLibrary.AbstractControllers;
 using ControlsLibrary.AbstractControllers.TabView;
+using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using ControlsLibrary.Factories.Concrete.WinForms.Containers;
 using Orientation = ControlsLibrary.Containers.Orientation;
 
@@ -38,22 +40,26 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
             switch (Orientation)
             {
                 case Orientation.Horizontal:
-                    _table.LayoutSettings.ColumnCount = 2;
-                    _table.LayoutSettings.RowCount = 1;
-
-                    _table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-                    _table.RowStyles.Add(new RowStyle(SizeType.Percent));
+                    _table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); //100%
+                    _table.RowStyles.Add(new RowStyle(SizeType.Absolute, RelativePosition));
                     _table.RowStyles.Add(new RowStyle(SizeType.Percent));
                     break;
 
                 case Orientation.Vertical:
 
-                    _table.LayoutSettings.RowCount = 2;
-                    _table.LayoutSettings.ColumnCount = 1;
-                    _table.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-                    _table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent));
+                    _table.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+                    _table.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize, RelativePosition));
                     _table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent));
                     break;
+            }
+            _table.KeyUp += OnKeyUp;
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.T)
+            {
+                AddNewTab.Invoke(this, new TabEventArgs(null));
             }
         }
 
@@ -101,15 +107,20 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
                 {
                     case Orientation.Horizontal:
                         _table.RowStyles[0].Height = value;
-                        _table.RowStyles[1].Height = 100 - value;
                         break;
                     case Orientation.Vertical:
                         _table.ColumnStyles[0].Width = value;
-                        _table.ColumnStyles[1].Width = 100 - value;
                         break;
                 }
                 _relativePosition = value;
             }
+        }
+
+        private event TabEventHandler AddNewTab;
+        event TabEventHandler ISplitContainer.AddNewTab
+        {
+            add { this.AddNewTab += value; }
+            remove { this.AddNewTab -= value; }
         }
     }
 }

@@ -33,25 +33,14 @@
             // 
             // tabView1
             // 
-            this.tabView1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.tabView1.ColumnCount = 2;
-            this.tabView1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 79.92656F));
-            this.tabView1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.07344F));
-            this.tabView1.Location = new System.Drawing.Point(150, 101);
-            this.tabView1.Name = "tabView1";
-            this.tabView1.RowCount = 2;
-            this.tabView1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tabView1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tabView1.Size = new System.Drawing.Size(821, 324);
-            this.tabView1.TabIndex = 0;
+
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1283, 581);
+            this.ClientSize = new System.Drawing.Size(777, 435);
             this.Controls.Add(this.tabView1);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);

@@ -106,17 +106,25 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             BufferedCollection = Factory.CreateBufferedCollection();
 
             TabCollection.TabSelected += OnTabSelected;
+            Container.AddNewTab += OnNewTabAdded;
+            TabCollection.ButtonAddClickedHandler += OnNewTabAdded;
 
             Container.Panel1 = TabCollection;
             Container.Panel2 = BufferedCollection;
-            Container.RelativePosition = 10;
+            Container.RelativePosition = 30;
             ITabPanel tabPanel = Factory.CreateTabPanel();
             TabCollection.Add(tabPanel);
         }
 
-        public void OnTabSelected(object sender, TabSelectedEventArgs args)
+        public void OnNewTabAdded(object sender, TabEventArgs arg)
         {
-            Show(args.TabContent);
+            ITabPanel item = arg.TabPanel ?? Factory.CreateTabPanel();
+            TabCollection.Add(item);
+        }
+
+        public void OnTabSelected(object sender, TabEventArgs args)
+        {
+            Show(args.TabPanel.TabContent);
         }
 
         public void Show(ITabContent tabContent = null)

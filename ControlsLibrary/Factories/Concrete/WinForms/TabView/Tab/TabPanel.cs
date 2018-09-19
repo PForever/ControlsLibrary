@@ -21,11 +21,15 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         {
         }
 
-        public TabPanel(Panel panel, WinFactory factory)
+        public TabPanel(Panel panel, WinFactory factory) : this(panel, factory, factory.CreateTabContent())
+        {
+        }
+
+        public TabPanel(Panel panel, WinFactory factory, ITabContent tabContent)
         {
             _factory = factory;
             _panel = panel;
-            TabContent = _factory.CreateTabContent();
+            TabContent = tabContent;
         }
 
         object IControl.Control { get => _panel; /*set => _panel = (Panel)value;*/ }
@@ -68,15 +72,32 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
             set => _panel.Height = value;
         }
 
-        public event TabDeleteEventHandler TabDeleted;
-        public event TabMoveHandler TabMoved;
-        public event TabSelectedEventHandler TabSelected;
+        private event TabEventHandler TabDeleted;
+        event TabEventHandler ITabPanel.TabDeleted
+        {
+            add { this.TabDeleted += value; }
+            remove { this.TabDeleted -= value; }
+        }
+
+        private event TabMoveHandler TabMoved;
+        event TabMoveHandler ITabPanel.TabMoved
+        {
+            add { this.TabMoved += value; }
+            remove { this.TabMoved -= value; }
+        }
+
+        private event TabSelectedEventHandler TabSelected;
+
+        event TabSelectedEventHandler ITabPanel.TabSelected
+        {
+            add { this.TabSelected += value; }
+            remove { this.TabSelected -= value; }
+        }
 
         public void Delete()
         {
             if (TabDeleted == null) throw new Exception("Content not found");
-            //что-то пошло не так
-            TabDeleted.Invoke(this, new TabDeletedEventArgs(this));
+            TabDeleted.Invoke(this, new TabEventArgs(this));
         }
 
         public void InitializeComponent()
@@ -86,7 +107,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         public void Select()
         {
             if (TabSelected == null) throw new Exception("Content not found");
-            TabSelected.Invoke(this, new TabSelectedEventArgs(this, TabContent));
+            TabSelected.Invoke(this, new TabEventArgs(this));
         }
 
         public void Dispose()

@@ -68,12 +68,11 @@
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabSelectedEventArgs.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\ITabContent.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\ITabPanel.cs" />
-    <Compile Include="AbstractControllers\TabView\Tab\Events\TabDeleteEventHandler.cs" />
-    <Compile Include="AbstractControllers\TabView\Tab\Events\TabsEventArgs.cs" />
+    <Compile Include="AbstractControllers\TabView\Tab\Events\TabEventHandler.cs" />
+    <Compile Include="AbstractControllers\TabView\Tab\Events\TabEventArgs.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabMoveHandler.cs" />
     <Compile Include="Containers\Orientation.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\ViewCollectionLogic.cs" />
-    <Compile Include="AbstractControllers\TabView\Logic\SplitPanelLogic.cs" />
     <Compile Include="Factories\Concrete\WinForms\Containers\ControlList.cs" />
     <Compile Include="Factories\Concrete\WinForms\TableSplitContainer.cs" />
     <Compile Include="Factories\Concrete\WinForms\TabView\Tab\SimplePanel.cs" />

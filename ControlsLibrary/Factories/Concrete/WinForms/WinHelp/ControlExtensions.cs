@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -23,7 +24,24 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
                 }
             }
 
+            if (controlToClone.Controls.Count > 0)
+            {
+                instance.Controls.AddRange(controlToClone.CopyChildren());
+            }
             return instance;
+        }
+
+        private static Control[] CopyChildren(this Control src)
+        {
+            var controls = src.Controls;
+            Control[] result = new Control[controls.Count];
+            for (var i = 0; i < controls.Count; i++)
+            {
+                result[i] = controls[i].Clone();
+                result[i].Parent = null;
+            }
+
+            return result;
         }
     }
 }

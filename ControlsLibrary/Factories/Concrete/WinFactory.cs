@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using ControlsLibrary.AbstractControllers;
 using ControlsLibrary.AbstractControllers.TabView.Logic;
 using System.Drawing;
+using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using ControlsLibrary.Factories.Concrete.WinForms;
 using ControlsLibrary.Factories.Concrete.WinForms.WinHelp;
 
@@ -122,14 +123,24 @@ namespace ControlsLibrary.Factories.Concrete
         {
             if (panel is ITabCollection) return (ITabCollection) panel;
             IPanel pnl = CreatePanel((Panel) panel);
-            return new TabCollectionLogic(pnl);
+            var tabCollection = new TabCollectionLogic(pnl);
+            ((Panel)tabCollection.Control).MouseDoubleClick += (sender, e) => tabCollection.OnAddClicked(this, new TabEventArgs(null));
+            return tabCollection;
         }
 
 
         public ITabPanel CreateTabPanel()
         {
-            return CopyTabPanel(DefaultTabPanel);
+            ITabPanel tabPanel = CopyTabPanel(DefaultTabPanel);
+            //((Panel) tabPanel.Control).MouseDoubleClick += OnMouseDoubleClick;
+            return tabPanel;
         }
+
+        private void OnMouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            
+        }
+
         public ITabPanel CreateTabPanel(object panel)
         {
             return panel is ITabPanel ? (ITabPanel) panel : new TabPanel((Panel)panel, this);

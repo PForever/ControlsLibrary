@@ -6,6 +6,7 @@ using System.Linq;
 using ControlsLibrary.AbstractControllers.TabView.Tab;
 using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using ControlsLibrary.Containers;
+using ControlsLibrary.Factories.Concrete;
 
 namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
@@ -19,6 +20,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public TabCollectionLogic(IPanel tabsPanel)
         {
+            MaxTabWidth = 50;
             _tabsPanel = tabsPanel;
         }
 
@@ -43,7 +45,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         ITabPanel IList<ITabPanel>.this[int index] { get => (ITabPanel)Controls[index]; set => Controls[index] = value; }
 
-        public void OnTabDeleted(object sender, TabDeletedEventArgs args)
+        public void OnTabDeleted(object sender, TabEventArgs args)
         {
             //TODO возможно требует оптимизации
             int index = Controls.IndexOf(args.TabPanel);
@@ -73,7 +75,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
         int CalcWidth()
         {
-            if(Controls.Count < TabsThreshold) return MaxTabWidth;
+            if(Controls.Count < TabsThreshold) return CurrentTabWidth = MaxTabWidth;
             CurrentTabWidth = (int) (Width / (double)Controls.Count);
             Render();
             return CurrentTabWidth;
@@ -154,12 +156,18 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         {
             return (int)Math.Round(position / Width);
         }
-        public void OnTabSelected(object sender, TabSelectedEventArgs args)
+        public void OnTabSelected(object sender, TabEventArgs args)
         {
             TabSelected.Invoke(this, args);
         }
 
-        private event TabSelectedEventHandler TabSelected;
+        private event TabSelectedEventHandler ButtonAddClickedHandler;
+        event TabSelectedEventHandler ITabCollection.ButtonAddClickedHandler
+        {
+            add { this.ButtonAddClickedHandler += value; }
+            remove { this.ButtonAddClickedHandler -= value; }
+        }
+
         public void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args)
         {
         }
@@ -168,6 +176,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         {
         }
 
+        private event TabSelectedEventHandler TabSelected;
         event TabSelectedEventHandler ITabCollection.TabSelected
         {
             add { this.TabSelected += value; }
@@ -185,8 +194,14 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         {
             TabBinding(item);
             Controls.Insert(index, item);
+            SetPosition(index, item);
             Surfacing(Controls.Count - 1, index + 1, CalcWidth() + Indent);
             item.Select();
+        }
+
+        private void SetPosition(int index, ITabPanel item)
+        {
+            ChangeLocationWidth(item, index * CurrentTabWidth);
         }
 
         private void TabBinding(ITabPanel item)
@@ -198,6 +213,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public void Add(ITabPanel item)
         {
+            if (item == null) throw new ArgumentNullException(nameof(item));
             Insert(Count, item);
         }
         public bool Contains(ITabPanel item) => Controls.Contains(item);
@@ -268,5 +284,10 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             // GC.SuppressFinalize(this);
         }
         #endregion
+
+        public void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs)
+        {
+            ButtonAddClickedHandler.Invoke(this, tabCollectionEventArgs);
+        }
     }
 }

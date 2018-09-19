@@ -2,10 +2,10 @@
 
 namespace ControlsLibrary.AbstractControllers.TabView.Tab.Events
 {
-    public class TabDeletedEventArgs : EventArgs
+    public class TabEventArgs : EventArgs
     {
         public ITabPanel TabPanel { get; set; }
-        public TabDeletedEventArgs(ITabPanel tabPanel)
+        public TabEventArgs(ITabPanel tabPanel)
         {
             TabPanel = tabPanel;
         }

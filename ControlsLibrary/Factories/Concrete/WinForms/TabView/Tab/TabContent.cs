@@ -56,12 +56,12 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         {
         }
 
-        public void OnTabDeleted(object sender, TabDeletedEventArgs args)
+        public void OnTabDeleted(object sender, TabEventArgs args)
         {
             _control.Dispose();
         }
 
-        public void OnTabSelected(object sender, TabSelectedEventArgs args)
+        public void OnTabSelected(object sender, TabEventArgs args)
         {
             _control.Select();
         }
