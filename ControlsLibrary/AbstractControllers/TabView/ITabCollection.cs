@@ -28,7 +28,7 @@ namespace ControlsLibrary.AbstractControllers.TabView
         #endregion
 
         void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args);
-        void OnParentSizeChanged(object sender, SizeChangedHandlerArgs args);
+        void OnSizeChanged(object sender, SizeChangedHandlerArgs args);
         void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs);
     }
 

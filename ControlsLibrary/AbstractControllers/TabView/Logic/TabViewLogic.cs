@@ -32,7 +32,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                 _tabCollection = value;
 
                 LocationChanged += _tabCollection.OnParentLocationChanged;
-                SizeChanged += _tabCollection.OnParentSizeChanged;
+                SizeChanged += _tabCollection.OnSizeChanged;
             }
         }
 

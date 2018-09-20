@@ -1,5 +1,6 @@
 ﻿using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using System;
+using System.Windows.Forms;
 
 namespace ControlsLibrary.AbstractControllers.TabView.Tab
 {
@@ -13,5 +14,6 @@ namespace ControlsLibrary.AbstractControllers.TabView.Tab
         event TabEventHandler TabDeleted;
         event TabMoveHandler TabMoved;
         event TabSelectedEventHandler TabSelected;
+        void OnMouseClick(object sender, MouseEventArgs e);
     }
 }

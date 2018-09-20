@@ -87,6 +87,10 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         }
 
         private event TabSelectedEventHandler TabSelected;
+        public void OnMouseClick(object sender, MouseEventArgs e)
+        {
+            if(_panel.Rect.Contains(e.Location))
+        }
 
         event TabSelectedEventHandler ITabPanel.TabSelected
         {

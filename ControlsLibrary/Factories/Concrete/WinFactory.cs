@@ -124,7 +124,9 @@ namespace ControlsLibrary.Factories.Concrete
             if (panel is ITabCollection) return (ITabCollection) panel;
             IPanel pnl = CreatePanel((Panel) panel);
             var tabCollection = new TabCollectionLogic(pnl);
+
             ((Panel)tabCollection.Control).MouseDoubleClick += (sender, e) => tabCollection.OnAddClicked(this, new TabEventArgs(null));
+            ((Panel)tabCollection.Control).SizeChanged += (sender, e) => tabCollection.OnSizeChanged(this, new SizeChangedHandlerArgs(((Panel)tabCollection.Control).Size, Size.Empty));
             return tabCollection;
         }
 
@@ -132,7 +134,7 @@ namespace ControlsLibrary.Factories.Concrete
         public ITabPanel CreateTabPanel()
         {
             ITabPanel tabPanel = CopyTabPanel(DefaultTabPanel);
-            //((Panel) tabPanel.Control).MouseDoubleClick += OnMouseDoubleClick;
+            ((Panel) tabPanel.Control).MouseClick += tabPanel.OnMouseClick;
             return tabPanel;
         }
 

@@ -26,11 +26,11 @@ namespace ControlsLibrary.View
             this.BackColor = Color.Aqua;
 
             BorderStyle = BorderStyle.Fixed3D;
-            _tabContent = new Panel{BorderStyle = BorderStyle.FixedSingle, BackColor = Color.GreenYellow, BackgroundImage = Image.FromFile("C:\\Users\\st804476.RECTORAT\\Pictures\\wallhaven-181730.jpg"), BackgroundImageLayout = ImageLayout.Stretch};
+            _tabContent = new Panel{BorderStyle = BorderStyle.FixedSingle, BackColor = Color.GreenYellow, /*BackgroundImage = Image.FromFile("C:\\Users\\st804476.RECTORAT\\Pictures\\wallhaven-181730.jpg"), */BackgroundImageLayout = ImageLayout.Stretch};
             _panel = new Panel { BorderStyle = BorderStyle.FixedSingle, Height = 30, BackColor = Color.Blue};
             _viewPanel = new Panel { BorderStyle = BorderStyle.FixedSingle, BackColor = Color.Red};
 
-            _tabPanel = new Panel { BorderStyle = BorderStyle.FixedSingle, Width = 50, BackColor = Color.Green, BackgroundImage = Image.FromFile("C:\\Users\\st804476.RECTORAT\\Pictures\\393678.jpg"), BackgroundImageLayout = ImageLayout.Stretch };
+            _tabPanel = new Panel { BorderStyle = BorderStyle.FixedSingle, Width = 50, BackColor = Color.Green, /*BackgroundImage = Image.FromFile("C:\\Users\\st804476.RECTORAT\\Pictures\\393678.jpg"), */BackgroundImageLayout = ImageLayout.Stretch };
             //Button button = new Button{Dock = DockStyle.Fill, BackgroundImage = Image.FromFile("C:\\Users\\st804476.RECTORAT\\Pictures\\393678.jpg"), BackgroundImageLayout = ImageLayout.Stretch};
             //_tabPanel.Controls.Add(button);
 

@@ -172,8 +172,9 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         {
         }
 
-        public void OnParentSizeChanged(object sender, SizeChangedHandlerArgs args)
+        public void OnSizeChanged(object sender, SizeChangedHandlerArgs args)
         {
+            CalcWidth();
         }
 
         private event TabSelectedEventHandler TabSelected;
