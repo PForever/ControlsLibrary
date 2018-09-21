@@ -134,11 +134,16 @@ namespace ControlsLibrary.Factories.Concrete
         public ITabPanel CreateTabPanel()
         {
             ITabPanel tabPanel = CopyTabPanel(DefaultTabPanel);
-            ((Panel) tabPanel.Control).MouseClick += tabPanel.OnMouseClick;
+            Panel panel = (Panel) tabPanel.Control;
+            panel.MouseClick += tabPanel.OnMouseClick;
+            panel.MouseCaptureChanged += tabPanel.OnMouseCaptureChanged;
+            panel.MouseMove += OnMouseMove;
+            //tabPanel.MovingStart = () => panel.GetGodfather().MouseMove += tabPanel.OnMouseMove;
+            //tabPanel.MovingStop = () => panel.GetGodfather().MouseMove -= tabPanel.OnMouseMove;
             return tabPanel;
         }
 
-        private void OnMouseDoubleClick(object sender, MouseEventArgs e)
+        private void OnMouseMove(object sender, MouseEventArgs e)
         {
             
         }

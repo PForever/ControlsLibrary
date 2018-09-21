@@ -207,6 +207,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         private void TabBinding(ITabPanel item)
         {
+            TabSelected += item.Unselect;
             item.TabSelected += OnTabSelected;
             item.TabDeleted += OnTabDeleted;
             item.TabMoved += OnTabMoved;

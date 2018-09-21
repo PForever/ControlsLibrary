@@ -33,9 +33,26 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         }
 
         object IControl.Control { get => _panel; /*set => _panel = (Panel)value;*/ }
-        public bool IsSelected { get; set; }
+        public void Unselect(object sender, TabEventArgs args)
+        {
+            if (args.TabPanel == this) return;
+            IsSelected = false;
+        }
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            private set
+            {
+                _panel.BackColor = value ? Color.BlueViolet : Color.Gray;
+                _isSelected = value;
+            }
+        }
+
         public Orientation Orientation { get; set; }
         private ControlList _controlList;
+        private bool _isSelected;
+
         public IControlList Controls
         {
             get => _controlList;
@@ -89,7 +106,22 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         private event TabSelectedEventHandler TabSelected;
         public void OnMouseClick(object sender, MouseEventArgs e)
         {
-            if(_panel.Rect.Contains(e.Location))
+            if (_panel.ClientRectangle.Contains(e.Location))
+            {
+                if(!IsSelected) Select();
+                MovingStart();
+            }
+        }
+
+        public void OnMouseCaptureChanged(object sender, EventArgs e)
+        {
+            if (IsSelected) MovingStop();
+        }
+
+        public Action MovingStart { get; set; }
+        public Action MovingStop { get; set; }
+        public void OnMouseMove(object sender, MouseEventArgs e)
+        {
         }
 
         event TabSelectedEventHandler ITabPanel.TabSelected
@@ -110,6 +142,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
 
         public void Select()
         {
+            IsSelected = true;
             if (TabSelected == null) throw new Exception("Content not found");
             TabSelected.Invoke(this, new TabEventArgs(this));
         }
