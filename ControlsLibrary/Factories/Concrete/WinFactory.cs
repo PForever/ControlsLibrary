@@ -138,8 +138,8 @@ namespace ControlsLibrary.Factories.Concrete
             panel.MouseClick += tabPanel.OnMouseClick;
             panel.MouseCaptureChanged += tabPanel.OnMouseCaptureChanged;
             panel.MouseMove += OnMouseMove;
-            //tabPanel.MovingStart = () => panel.GetGodfather().MouseMove += tabPanel.OnMouseMove;
-            //tabPanel.MovingStop = () => panel.GetGodfather().MouseMove -= tabPanel.OnMouseMove;
+            tabPanel.MovingStart = () => panel.GetGodfather().MouseMove += tabPanel.OnMouseMove;
+            tabPanel.MovingStop = () => panel.GetGodfather().MouseMove -= tabPanel.OnMouseMove;
             return tabPanel;
         }
 

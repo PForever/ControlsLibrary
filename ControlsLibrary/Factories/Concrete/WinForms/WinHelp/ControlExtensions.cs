@@ -24,11 +24,11 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
             {
                 if (propInfo.CanWrite)
                 {
-                    if (propInfo.Name != "WindowTarget")
+                    if (propInfo.Name != "WindowTarget"
+)
                         propInfo.SetValue(instance, propInfo.GetValue(controlToClone, null), null);
                 }
             }
-
             if (controlToClone.Controls.Count > 0)
             {
                 instance.Controls.AddRange(controlToClone.CopyChildren());
@@ -70,38 +70,64 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
             if (dst == null) throw new ArgumentNullException(nameof(dst));
 
             Type t = typeof(Control);
+
+            EventHandlerList srcEvents = (EventHandlerList)t.GetProperty("Events", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(src);
             EventHandlerList dstEvents = (EventHandlerList)t.GetProperty("Events", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(dst);
 
-            EventInfo eventInfo = t.GetEvent("MouseMove");
-            FieldInfo fieldInfo = t.GetField("EventMouseMove", BindingFlags.NonPublic | BindingFlags.Static);
-            object field = fieldInfo.GetValue(null);
-            void DstHandlerInvoke(object sender, MouseEventArgs args)
+            foreach (EventInfo eventInfo in t.GetEvents(BindingFlags.Public | BindingFlags.Instance))
             {
-                MouseEventHandler eventHandler = dstEvents[field] as MouseEventHandler;
-                eventHandler?.Invoke(sender, args);
+                if(eventInfo.Name == "Disposed") continue;
+                FieldInfo fieldInfo = t.GetField("Event" + eventInfo.Name, BindingFlags.NonPublic | BindingFlags.Static)
+                                   ?? t.GetField("Event" + _suffixReg.Replace(eventInfo.Name, ""), BindingFlags.NonPublic | BindingFlags.Static); //winforms ♥
+                object field = fieldInfo.GetValue(null);
+
+                HandlRouter router = new HandlRouter(field, dstEvents, dst.Name, src.Name, eventInfo.Name);
+                MethodInfo handlerInfo = router.GetType().GetMethod("Invoke", new Type[] { typeof(object), typeof(EventArgs) });
+                Delegate deleg = Delegate.CreateDelegate(eventInfo.EventHandlerType, router, handlerInfo, true);
+                //надо создать делегат задано сигнатуры
+                //Delegate combine = Delegate.Combine(deleg, dstEvents[field]);
+                srcEvents.AddHandler(field, deleg);
+                //eventInfo.AddEventHandler(src, deleg);
             }
-            MouseEventHandler handler = DstHandlerInvoke;
-            eventInfo.AddEventHandler(src, handler);
+        }
 
-            //EventHandlerList parentEvents = (EventHandlerList)t.GetProperty("Events", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(parent);
+        public class HandlRouter
+        {
+            private readonly object _key;
+            private readonly EventHandlerList _eventHandlerList;
+            public string DestenationName { get; }
+            public string SourceName { get; }
+            public string EventName { get; }
 
-            //foreach (EventInfo eventInfo in t.GetEvents(BindingFlags.Public | BindingFlags.Instance))
-            //{
-            //    FieldInfo fieldInfo = t.GetField("Event" + eventInfo.Name, BindingFlags.NonPublic | BindingFlags.Static)
-            //                       ?? t.GetField("Event" + _suffixReg.Replace(eventInfo.Name, ""), BindingFlags.NonPublic | BindingFlags.Static); //winforms ♥
-            //    object field = fieldInfo.GetValue(null);
+            public HandlRouter(object key, EventHandlerList eventHandlerList, string destenationName, string sourceName, string eventName)
+            {
+                _key = key;
+                _eventHandlerList = eventHandlerList;
+                DestenationName = destenationName;
+                SourceName = sourceName;
+                EventName = eventName;
+            }
 
-            //    void ParentsHandlerInvoke(object sender, EventArgs args)
-            //    {
-            //        EventHandler eventHandler = parentEvents[field] as EventHandler;
-            //        eventHandler?.Invoke(sender, args);
-            //    }
+            protected HandlRouter()
+            {
+            }
+            public void Invoke(object sender, EventArgs args)
+            {
+                string srcName = ((Control)sender).Name;
+                var handler = _eventHandlerList[_key];
+                //handler?.Invoke(sender, args);
+                if(handler != null)
+                {
+                    var handlers = handler.GetInvocationList();
+                    for (var i = handlers.Length - 1; i >= 0; i--)
+                    {
+                        var @delegate = handlers[i];
+                        @delegate.Method.Invoke(@delegate.Target, new[] {sender, args});
+                    }
+                }
 
-            //    EventHandler handler = ParentsHandlerInvoke;
-            //    //надо создать делегат задано сигнатуры
-            //    eventInfo.AddEventHandler(child, ParentsHandlerInvoke);
-            //}
-
+                //handler?.Method.Invoke(handler.Target, new[] { sender, args });
+            }
         }
 
         public static void BubblingFromParent(this Control control)
@@ -128,7 +154,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
             foreach (Control child in parent.Controls)
             {
                 bindingEvents(parent, child);
-                child.BubblingFromParent(bindingEvents);
+                child.TunnelingFromParent(bindingEvents);
             }
         }
     }
