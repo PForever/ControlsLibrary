@@ -1,4 +1,5 @@
-﻿using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
+﻿using System.Windows.Forms;
+using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 
 namespace ControlsLibrary.AbstractControllers.TabView
 {
@@ -8,5 +9,6 @@ namespace ControlsLibrary.AbstractControllers.TabView
         IPanel Panel2 { get; set; }
         int RelativePosition { get; set; }
         event TabEventHandler AddNewTab;
+        event TabEventHandler RemoveSelectedTab;
     }
 }

@@ -10,7 +10,6 @@ using System.Windows.Forms;
 
 namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
 {
-    //https://stackoverflow.com/questions/10266589/clone-controls-c-sharp-winform
     public static class ControlExtensions
     {
         public static T Clone<T>(this T controlToClone)
@@ -64,7 +63,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
         private const string SuffixPattern = "Changed$";
         private static Regex _suffixReg = new Regex(SuffixPattern);
 
-        private static void BindingEvents(Control src, Control dst)
+        public static void BindingEvents(Control src, Control dst)
         {
             if (src == null) throw new ArgumentNullException(nameof(src));
             if (dst == null) throw new ArgumentNullException(nameof(dst));
@@ -111,11 +110,11 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
             protected HandlRouter()
             {
             }
+            //TODO запускать обработчики события источника ДО обработчиков назначения
             public void Invoke(object sender, EventArgs args)
             {
                 string srcName = ((Control)sender).Name;
                 var handler = _eventHandlerList[_key];
-                //handler?.Invoke(sender, args);
                 if(handler != null)
                 {
                     var handlers = handler.GetInvocationList();
@@ -125,8 +124,6 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
                         @delegate.Method.Invoke(@delegate.Target, new[] {sender, args});
                     }
                 }
-
-                //handler?.Method.Invoke(handler.Target, new[] { sender, args });
             }
         }
 

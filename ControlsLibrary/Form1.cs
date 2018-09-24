@@ -16,15 +16,20 @@ namespace ControlsLibrary
         public Form1()
         {
             InitializeComponent();
-            this.BubblingFromParent();
-
+            //tabView1.BubblingFromParent();
+            ControlExtensions.BindingEvents(this, tabView1);
             this.MouseMove += OnMouseMove;
             tabView1.MouseMove += OnTabViewMouseMove;
             tabView1.Controls[0].MouseMove += OnTabCollectionMouseMove;
             tabView1.Controls[1].MouseMove += OnViewCollectionMouseMove;
             tabView1.Controls[1].Controls[0].MouseMove += OnTabContentMouseMove;
             this.MouseMove += OnMouseMove2;
+            this.KeyUp += OnKeyUp;
             //this.TunnelingFromParent();
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
         }
 
         private void OnMouseMove2(object sender, MouseEventArgs e)

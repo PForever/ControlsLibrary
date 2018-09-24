@@ -107,6 +107,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
             TabCollection.TabSelected += OnTabSelected;
             Container.AddNewTab += OnNewTabAdded;
+            Container.RemoveSelectedTab += OnSelectedTabRemoved;
             TabCollection.ButtonAddClickedHandler += OnNewTabAdded;
 
             Container.Panel1 = TabCollection;
@@ -114,6 +115,11 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             Container.RelativePosition = 30;
             ITabPanel tabPanel = Factory.CreateTabPanel();
             TabCollection.Add(tabPanel);
+        }
+
+        private void OnSelectedTabRemoved(object sender, TabEventArgs arg)
+        {
+            TabCollection.Remove(TabCollection.SelectedTab);
         }
 
         public void OnNewTabAdded(object sender, TabEventArgs arg)

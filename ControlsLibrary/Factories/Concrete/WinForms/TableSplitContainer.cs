@@ -52,14 +52,21 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
                     _table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent));
                     break;
             }
-            _table.KeyUp += OnKeyUp;
         }
 
-        private void OnKeyUp(object sender, KeyEventArgs e)
+        public void OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.T)
+            if (e.Control)
             {
-                AddNewTab.Invoke(this, new TabEventArgs(null));
+                switch (e.KeyCode)
+                {
+                    case Keys.T:
+                        AddNewTab.Invoke(this, new TabEventArgs(null));
+                        break;
+                    case Keys.W:
+                        RemoveSelectedTab.Invoke(this, new TabEventArgs(null));
+                        break;
+                }
             }
         }
 
@@ -117,6 +124,14 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
         }
 
         private event TabEventHandler AddNewTab;
+        private event TabEventHandler RemoveSelectedTab;
+
+        event TabEventHandler ISplitContainer.RemoveSelectedTab
+        {
+            add { this.RemoveSelectedTab += value; }
+            remove { this.RemoveSelectedTab -= value; }
+        }
+
         event TabEventHandler ISplitContainer.AddNewTab
         {
             add { this.AddNewTab += value; }

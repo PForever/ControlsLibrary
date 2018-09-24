@@ -11,6 +11,8 @@ namespace ControlsLibrary.AbstractControllers.TabView
     {
         #region TabProperty
         int MaxTabWidth { get; }
+        ITabPanel SelectedTab { get; set; }
+
         #endregion
         #region TabEvents
         void OnTabDeleted(object sender, TabEventArgs args);

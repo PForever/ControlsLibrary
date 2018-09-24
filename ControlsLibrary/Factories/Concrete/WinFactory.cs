@@ -176,7 +176,10 @@ namespace ControlsLibrary.Factories.Concrete
         {
             //IPanel panel = CreatePanel((Panel) splitContainer);
             TableLayoutPanel table = TypeCheck<TableLayoutPanel>(splitContainer);
-            return new TableSplitContainer(table); //new SplitPanelLogic(panel, this, DefaultSep);
+            var container = new TableSplitContainer(table); //new SplitPanelLogic(panel, this, DefaultSep);
+            Control control = (Control) container.Control;
+            control.KeyUp += container.OnKeyUp;
+            return container;
         }
         public ISplitContainer CreateSplitContainer(bool copy = true)
         {

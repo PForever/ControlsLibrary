@@ -25,6 +25,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
 
         public int MaxTabWidth { get; }
+        public ITabPanel SelectedTab { get; set; }
         public int Indent { get; set; }
         public int CurrentTabWidth { get; set; }
         public Orientation Orientation { get => _tabsPanel.Orientation; set => _tabsPanel.Orientation = value; }
@@ -158,6 +159,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
         public void OnTabSelected(object sender, TabEventArgs args)
         {
+            SelectedTab = args.TabPanel;
             TabSelected.Invoke(this, args);
         }
 
