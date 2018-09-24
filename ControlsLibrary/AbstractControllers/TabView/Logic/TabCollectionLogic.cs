@@ -55,17 +55,17 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
         void Surfacing(int from, int to, int width)
         {
-            if(from < to) return;
+            if(from < Count) return;
             switch (Orientation)
             {
                 case Orientation.Horizontal:
-                    for (int i = from; i <= to; i++)
+                    for (int i = to; i < from; i++)
                     {
                         ChangeLocationWidth(Controls[i], width);
                     }
                     break;
                 case Orientation.Vertical:
-                    for (int i = from; i <= to; i++)
+                    for (int i = to; i < from; i++)
                     {
                         ChangeLocationHeight(Controls[i], width);
                     }
@@ -225,17 +225,25 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public bool Remove(ITabPanel item)
         {
-            if (Controls.Contains(item)) return false;
+            if (!Controls.Contains(item)) return false;
             int index = Controls.IndexOf(item);
             RemoveAt(index);
             return true;
         }
         public void RemoveAt(int index)
         {
-            Controls[index].Dispose();
+            IControl control = Controls[index];
             Controls.RemoveAt(index);
+            control.Dispose();
             Surfacing(index, Controls.Count - 1, -CalcWidth() - Indent);
-            ((ITabPanel)Controls[index]).Select();
+            if (Count > index)
+            {
+                ((ITabPanel)Controls[index]).Select();
+            }
+            else if(Count > 0)
+            {
+                ((ITabPanel)Controls.Last()).Select();
+            }
         }
         public void Clear()
         {
