@@ -51,21 +51,22 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             //TODO возможно требует оптимизации
             int index = Controls.IndexOf(args.TabPanel);
             Controls.RemoveAt(index);
+            if(index == Count) return;
             Surfacing(index, Controls.Count - 1, -CalcWidth() - Indent);
         }
         void Surfacing(int from, int to, int width)
         {
-            if(from < Count) return;
+            if(from == Count) return;
             switch (Orientation)
             {
                 case Orientation.Horizontal:
-                    for (int i = to; i < from; i++)
+                    for (int i = from; i <= to; i++)
                     {
                         ChangeLocationWidth(Controls[i], width);
                     }
                     break;
                 case Orientation.Vertical:
-                    for (int i = to; i < from; i++)
+                    for (int i = from; i <= to; i++)
                     {
                         ChangeLocationHeight(Controls[i], width);
                     }
@@ -76,7 +77,12 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
         int CalcWidth()
         {
-            if(Controls.Count < TabsThreshold) return CurrentTabWidth = MaxTabWidth;
+            if (Controls.Count < TabsThreshold)
+            {
+                if(CurrentTabWidth == MaxTabWidth) return MaxTabWidth;
+                Render();
+                return CurrentTabWidth = MaxTabWidth;
+            }
             CurrentTabWidth = (int) (Width / (double)Controls.Count);
             Render();
             return CurrentTabWidth;
@@ -198,7 +204,9 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             TabBinding(item);
             Controls.Insert(index, item);
             SetPosition(index, item);
-            Surfacing(Controls.Count - 1, index + 1, CalcWidth() + Indent);
+            CalcWidth();
+            if(index < Count - 1)
+                Surfacing(Controls.Count - 1, index + 1, CurrentTabWidth + Indent);
             item.Select();
         }
 
