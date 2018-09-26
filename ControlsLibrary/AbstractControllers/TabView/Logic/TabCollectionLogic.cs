@@ -6,7 +6,6 @@ using System.Linq;
 using ControlsLibrary.AbstractControllers.TabView.Tab;
 using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using ControlsLibrary.Containers;
-using ControlsLibrary.Factories.Concrete;
 
 namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
@@ -18,16 +17,30 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         private IPanel _tabsPanel;
 
+        private event PropertyChangedEventHandler<int> CurrentTabWidthChanged;
+
         public TabCollectionLogic(IPanel tabsPanel)
         {
             MaxTabWidth = 50;
             _tabsPanel = tabsPanel;
+            CurrentTabWidthChanged += OnCurrentTabWidthChanged;
         }
 
         public int MaxTabWidth { get; }
         public ITabPanel SelectedTab { get; set; }
         public int Indent { get; set; }
-        public int CurrentTabWidth { get; set; }
+
+        public int CurrentTabWidth
+        {
+            get => _currentTabWidth;
+            set
+            {
+                int oldValue = _currentTabWidth;
+                _currentTabWidth = value;
+                CurrentTabWidthChanged.Invoke(this, new PropertyChangedEventArgs<int>(oldValue, value));
+            }
+        }
+
         public Orientation Orientation { get => _tabsPanel.Orientation; set => _tabsPanel.Orientation = value; }
 
         public IControlList Controls
@@ -51,37 +64,45 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             //TODO возможно требует оптимизации
             int index = Controls.IndexOf(args.TabPanel);
             Controls.RemoveAt(index);
-            Surfacing(index, Controls.Count - 1, -CalcWidth() - Indent);
+            Surfacing(index, Controls.Count - 1, -CurrentTabWidth - Indent);
+            TryRender();
         }
-        void Surfacing(int from, int to, int width)
+        private void Surfacing(int from, int to, int width)
         {
-            if(from < Count) return;
             switch (Orientation)
             {
                 case Orientation.Horizontal:
-                    for (int i = to; i < from; i++)
+                    for (int i = from; i < to; i++)
                     {
                         ChangeLocationWidth(Controls[i], width);
                     }
                     break;
                 case Orientation.Vertical:
-                    for (int i = to; i < from; i++)
+                    for (int i = from; i < to; i++)
                     {
                         ChangeLocationHeight(Controls[i], width);
                     }
                     break;
-                default:
-                    break;
             }
         }
-        int CalcWidth()
+        private void CalcWidth()
         {
-            if(Controls.Count < TabsThreshold) return CurrentTabWidth = MaxTabWidth;
-            CurrentTabWidth = (int) (Width / (double)Controls.Count);
-            Render();
-            return CurrentTabWidth;
+            if(Controls.Count < TabsThreshold) CurrentTabWidth = MaxTabWidth;
+            else CurrentTabWidth = (int) (Width / (double)Controls.Count);
         }
-        protected void Render()
+        protected void TryRender()
+        {
+            CalcWidth();
+        }
+
+        protected void OnCurrentTabWidthChanged(object sender, PropertyChangedEventArgs<int> args)
+        {
+            if (args.OldValue != args.NewValue)
+            {
+                Render();
+            }
+        }
+        protected virtual void Render()
         {
             int curPosition = 0;
             switch (Orientation)
@@ -92,6 +113,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                         panel.Location = new Point(curPosition, panel.Location.Y);
                         curPosition += (panel.Width = CurrentTabWidth) + Indent;
                     }
+
                     break;
                 case Orientation.Vertical:
                     foreach (ITabPanel panel in Controls.Cast<ITabPanel>())
@@ -99,12 +121,11 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                         panel.Location = new Point(panel.Location.Y, curPosition);
                         curPosition += (panel.Height = CurrentTabWidth) + Indent;
                     }
-                    break;
-                default:
+
                     break;
             }
-
         }
+
         protected void Render(int index)
         {
             ITabPanel panel = (ITabPanel) Controls[index];
@@ -118,8 +139,6 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                 case Orientation.Vertical:
                     panel.Location = new Point(panel.Location.Y, curPosition);
                     panel.Height = CurrentTabWidth;
-                    break;
-                default:
                     break;
             }
         }
@@ -144,8 +163,9 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             int oldIndex = Controls.IndexOf(args.TabPanel);
             SwitchCollectionPositions(oldIndex, index);
             if (oldIndex < index)
-                 Surfacing(oldIndex, index, -CalcWidth() - Indent);
-            else Surfacing(index, oldIndex, CalcWidth() + Indent);
+                 Surfacing(oldIndex, index, -CurrentTabWidth - Indent);
+            else Surfacing(index, oldIndex, CurrentTabWidth + Indent);
+            TryRender();
         }
         void SwitchCollectionPositions(int oldindex, int index)
         {
@@ -176,7 +196,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public void OnSizeChanged(object sender, SizeChangedHandlerArgs args)
         {
-            CalcWidth();
+            TryRender();
         }
 
         private event TabSelectedEventHandler TabSelected;
@@ -188,7 +208,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public void InitializeComponent()
         {
-            Render();
+            TryRender();
             _tabsPanel.InitializeComponent();
         }
 
@@ -198,7 +218,8 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             TabBinding(item);
             Controls.Insert(index, item);
             SetPosition(index, item);
-            Surfacing(Controls.Count - 1, index + 1, CalcWidth() + Indent);
+            if(index < Count - 1) Surfacing(Controls.Count - 1, index + 1, CurrentTabWidth + Indent);
+            TryRender();
             item.Select();
         }
 
@@ -235,7 +256,8 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             IControl control = Controls[index];
             Controls.RemoveAt(index);
             control.Dispose();
-            Surfacing(index, Controls.Count - 1, -CalcWidth() - Indent);
+            Surfacing(index, Controls.Count, -CurrentTabWidth - Indent);
+            TryRender();
             if (Count > index)
             {
                 ((ITabPanel)Controls[index]).Select();
@@ -264,6 +286,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         #region IDisposable Support
         private bool _disposedValue = false; // To detect redundant calls
+        private int _currentTabWidth;
 
         protected virtual void Dispose(bool disposing)
         {

@@ -59,6 +59,8 @@
     <Compile Include="AbstractControllers\TabView\ITabView.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\BufferedPage.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\LocationChangedHandlerArgs.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\PropertyChangedEventArgs.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\PropertyChangedEventHandler.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\SeparatorLogic.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\SizeChangedHandlerArgs.cs" />
     <Compile Include="Containers\Position.cs" />
