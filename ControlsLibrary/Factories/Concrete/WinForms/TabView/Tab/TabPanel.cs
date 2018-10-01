@@ -108,6 +108,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         {
             if (_panel.ClientRectangle.Contains(e.Location))
             {
+                IsClicked = true;
                 if(!IsSelected) Select();
                 MovingStart();
             }
@@ -115,11 +116,14 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
 
         public void OnMouseCaptureChanged(object sender, EventArgs e)
         {
+            if (IsClicked) IsClicked = false;
             if (IsSelected) MovingStop();
         }
 
         public Action MovingStart { get; set; }
         public Action MovingStop { get; set; }
+        public bool IsClicked { get; set; }
+
         public void OnMouseMove(object sender, MouseEventArgs e)
         {
         }

@@ -7,6 +7,6 @@ namespace ControlsLibrary.AbstractControllers.TabView.Tab
     {
         void OnTabDeleted(object sender, TabEventArgs args);
         void OnTabSelected(object sender, TabEventArgs args);
-        bool Featch { get; set; }
+        bool Fetch { get; set; }
     }
 }

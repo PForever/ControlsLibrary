@@ -16,7 +16,7 @@ namespace ControlsLibrary
         public Form1()
         {
             InitializeComponent();
-            //tabView1.BubblingFromParent();
+            tabView1.BubblingFromParent();
             ControlExtensions.BindingEvents(this, tabView1);
             this.MouseMove += OnMouseMove;
             tabView1.MouseMove += OnTabViewMouseMove;

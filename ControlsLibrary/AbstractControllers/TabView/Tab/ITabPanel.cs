@@ -19,6 +19,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Tab
         void OnMouseCaptureChanged(object sender, EventArgs e);
         Action MovingStart { get; set; }
         Action MovingStop { get; set; }
+        bool IsClicked { get; set; }
         void OnMouseMove(object sender, MouseEventArgs e);
     }
 }

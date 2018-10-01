@@ -3,6 +3,7 @@ using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using ControlsLibrary.Containers;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 using ControlsLibrary.AbstractControllers.TabView.Logic;
 
 namespace ControlsLibrary.AbstractControllers.TabView
@@ -29,6 +30,7 @@ namespace ControlsLibrary.AbstractControllers.TabView
 
         #endregion
 
+        void OnMouseMove(object sender, MouseEventArgs args);
         void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args);
         void OnSizeChanged(object sender, SizeChangedHandlerArgs args);
         void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs);

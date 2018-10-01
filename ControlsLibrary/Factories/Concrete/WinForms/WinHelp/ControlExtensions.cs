@@ -131,6 +131,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
         {
             BubblingFromParent(control, BindingEvents);
         }
+
         public static void TunnelingFromParent(this Control control)
         {
             TunnelingFromParent(control, BindingEvents);

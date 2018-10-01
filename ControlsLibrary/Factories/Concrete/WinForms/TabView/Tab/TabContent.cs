@@ -66,7 +66,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
             _control.Select();
         }
         
-        public bool Featch
+        public bool Fetch
         {
             get => _control.Dock == DockStyle.Fill;
             set => _control.Dock = value ? DockStyle.Fill : DockStyle.Left;

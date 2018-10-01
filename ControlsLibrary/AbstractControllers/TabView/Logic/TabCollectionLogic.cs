@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 using ControlsLibrary.AbstractControllers.TabView.Tab;
 using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
-using ControlsLibrary.Containers;
+using Orientation = ControlsLibrary.Containers.Orientation;
 
 namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
@@ -188,6 +189,11 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         {
             add { this.ButtonAddClickedHandler += value; }
             remove { this.ButtonAddClickedHandler -= value; }
+        }
+
+        public void OnMouseMove(object sender, MouseEventArgs args)
+        {
+            if(args.Button == MouseButtons.Left && SelectedTab.IsClicked)
         }
 
         public void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args)

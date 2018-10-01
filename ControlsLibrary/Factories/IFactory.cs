@@ -12,7 +12,6 @@ namespace ControlsLibrary.Factories
         ITabContent CreateTabContent(object content);
         ITabContent CreateTabContent();
         //void SetPanelProperty(IPanel panel, Point location, int width, int height);
-        ISetarator CreateSeparator();
         ITabCollection CreateTabCollection();
         IControl CreateControl(object obj);
         IPanel CreatePanel(object obj);
@@ -25,7 +24,6 @@ namespace ControlsLibrary.Factories
         ISplitContainer CreateSplitContainer(object splitContainer);
         ISplitContainer CreateSplitContainer(bool copy = true);
         IEnumerable<IControl> CreateControls(IEnumerable controls);
-        ISetarator CreateSeparator(int height, double defaultSep);
         ITabView CreateTabView();
     }
 }

@@ -71,17 +71,23 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             get => _current;
             set
             {
-                if(!_buffer.Pages.Contains(value)) _buffer.Add(value);
+                if (!_buffer.Pages.Contains(value))
+                {
+                    value.Fetch = true;
+                    _buffer.Add(value);
+                    Controls.Add(value);
+                }
+                value.Visible = true;
+                //((System.Windows.Forms.Control) (value.Control)).BringToFront();
+                //Controls.Add(value);
                 if (_current != null) //TODO заменить на заглушку
                 {
                     _buffer.Start(_current);
-                    //_current.Visible = false;
-                    Controls.Remove(_current);
+                    _current.Visible = false;
+                    //Controls.Remove(_current);
                 }
                 _current = value;
-                //_current.Visible = true;
-                Controls.Add(_current);
-                _current.Featch = true;
+
             }
         }
 
