@@ -62,6 +62,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public void OnTabDeleted(object sender, TabEventArgs args)
         {
+            TabUnbinding(args.TabPanel);
             //TODO возможно требует оптимизации
             int index = Controls.IndexOf(args.TabPanel);
             Controls.RemoveAt(index);
@@ -181,8 +182,14 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public void OnTabSelected(object sender, TabEventArgs args)
         {
             SelectedTab = args.TabPanel;
+            //SelectedTab.MouseClick += OnMouseClickOnSelectedTab;
             TabSelected.Invoke(this, args);
         }
+
+        //private void OnMouseClickOnSelectedTab(object sender, MouseEventArgs arg2)
+        //{
+            
+        //}
 
         private event TabSelectedEventHandler ButtonAddClickedHandler;
         event TabSelectedEventHandler ITabCollection.ButtonAddClickedHandler
@@ -193,7 +200,23 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public void OnMouseMove(object sender, MouseEventArgs args)
         {
-            if(args.Button == MouseButtons.Left && SelectedTab.IsClicked)
+            if (args.Button == MouseButtons.Left && SelectedTab.IsClicked)
+            {
+                CalcNewPosition(args.X, args.Y, SelectedTab);
+            }
+        }
+
+        private void CalcNewPosition(int argsX, int argsY, ITabPanel tab)
+        {
+            switch (Orientation)
+            {
+                case Orientation.Horizontal:
+                    tab.Location = new Point(tab.Location.X + (argsX - tab.ClickPosition.X), tab.Location.Y);
+                    break;
+                case Orientation.Vertical:
+                    tab.Location = new Point(tab.Location.X, tab.Location.Y + (argsY - tab.ClickPosition.Y));
+                    break;
+            }
         }
 
         public void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args)
@@ -240,6 +263,13 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             item.TabSelected += OnTabSelected;
             item.TabDeleted += OnTabDeleted;
             item.TabMoved += OnTabMoved;
+        }
+        private void TabUnbinding(ITabPanel item)
+        {
+            TabSelected -= item.Unselect;
+            item.TabSelected -= OnTabSelected;
+            item.TabDeleted -= OnTabDeleted;
+            item.TabMoved -= OnTabMoved;
         }
 
         public void Add(ITabPanel item)

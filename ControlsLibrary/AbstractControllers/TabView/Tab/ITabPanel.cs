@@ -1,5 +1,6 @@
 ﻿using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace ControlsLibrary.AbstractControllers.TabView.Tab
@@ -20,6 +21,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Tab
         Action MovingStart { get; set; }
         Action MovingStop { get; set; }
         bool IsClicked { get; set; }
+        Point ClickPosition { get; set; }
         void OnMouseMove(object sender, MouseEventArgs e);
     }
 }

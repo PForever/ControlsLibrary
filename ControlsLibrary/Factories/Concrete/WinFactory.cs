@@ -118,8 +118,11 @@ namespace ControlsLibrary.Factories.Concrete
             IPanel pnl = CreatePanel((Panel) panel);
             var tabCollection = new TabCollectionLogic(pnl);
 
-            ((Panel)tabCollection.Control).MouseDoubleClick += (sender, e) => tabCollection.OnAddClicked(this, new TabEventArgs(null));
-            ((Panel)tabCollection.Control).SizeChanged += (sender, e) => tabCollection.OnSizeChanged(this, new SizeChangedHandlerArgs(((Panel)tabCollection.Control).Size, Size.Empty));
+            Panel control = (Panel) tabCollection.Control;
+
+            control.MouseDoubleClick += (sender, e) => tabCollection.OnAddClicked(this, new TabEventArgs(null));
+            control.SizeChanged += (sender, e) => tabCollection.OnSizeChanged(this, new SizeChangedHandlerArgs(((Panel)tabCollection.Control).Size, Size.Empty));
+            control.MouseMove += tabCollection.OnMouseMove;
             return tabCollection;
         }
 
@@ -128,7 +131,7 @@ namespace ControlsLibrary.Factories.Concrete
         {
             ITabPanel tabPanel = CreateTabPanel(CreateDefaultTabPanel());
             Panel panel = (Panel) tabPanel.Control;
-            panel.MouseClick += tabPanel.OnMouseClick;
+            panel.MouseDown += tabPanel.OnMouseClick;
             panel.MouseCaptureChanged += tabPanel.OnMouseCaptureChanged;
             tabPanel.MovingStart = () => panel.GetGodfather().MouseMove += tabPanel.OnMouseMove;
             tabPanel.MovingStop = () => panel.GetGodfather().MouseMove -= tabPanel.OnMouseMove;
