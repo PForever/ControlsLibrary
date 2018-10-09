@@ -40,5 +40,12 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         {
 
         }
+
+        public bool Remove(ITabContent item)
+        {
+            if (!Pages.Contains(item)) return false;
+            _timePages.Remove(item);
+            return true;
+        }
     }
 }

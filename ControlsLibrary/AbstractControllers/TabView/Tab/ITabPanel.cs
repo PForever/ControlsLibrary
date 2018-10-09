@@ -16,12 +16,14 @@ namespace ControlsLibrary.AbstractControllers.TabView.Tab
         event TabEventHandler TabDeleted;
         event TabMoveHandler TabMoved;
         event TabSelectedEventHandler TabSelected;
+        event TabEventHandler TabDrop;
+        event TabEventHandler Disposing;
         void OnMouseClick(object sender, MouseEventArgs e);
         void OnMouseCaptureChanged(object sender, EventArgs e);
-        Action MovingStart { get; set; }
-        Action MovingStop { get; set; }
+        
         bool IsClicked { get; set; }
         Point ClickPosition { get; set; }
         void OnMouseMove(object sender, MouseEventArgs e);
+        void BringToFront();
     }
 }

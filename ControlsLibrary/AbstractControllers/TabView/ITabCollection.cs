@@ -21,6 +21,7 @@ namespace ControlsLibrary.AbstractControllers.TabView
         void OnTabSelected(object sender, TabEventArgs args);
         event TabSelectedEventHandler TabSelected;
         event TabSelectedEventHandler ButtonAddClickedHandler;
+        event TabEventHandler TabDisposing;
         #endregion
 
         #region CollectionProperty
@@ -33,7 +34,9 @@ namespace ControlsLibrary.AbstractControllers.TabView
         void OnMouseMove(object sender, MouseEventArgs args);
         void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args);
         void OnSizeChanged(object sender, SizeChangedHandlerArgs args);
+        void OnTabDrop(object sender, TabEventArgs args);
         void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs);
+        void OnTabDisposing(object sender, TabEventArgs arg);
     }
 
 }

@@ -42,7 +42,15 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             }
         }
 
-        public Orientation Orientation { get => _tabsPanel.Orientation; set => _tabsPanel.Orientation = value; }
+        public Orientation Orientation
+        {
+            get => _tabsPanel.Orientation;
+            set
+            {
+                _tabsPanel.Orientation = value;
+                Render();
+            }
+        }
 
         public IControlList Controls
         {
@@ -74,13 +82,13 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             switch (Orientation)
             {
                 case Orientation.Horizontal:
-                    for (int i = from; i < to; i++)
+                    for (int i = from; i <= to; i++)
                     {
                         ChangeLocationWidth(Controls[i], width);
                     }
                     break;
                 case Orientation.Vertical:
-                    for (int i = from; i < to; i++)
+                    for (int i = from; i <= to; i++)
                     {
                         ChangeLocationHeight(Controls[i], width);
                     }
@@ -90,7 +98,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         private void CalcWidth()
         {
             if(Controls.Count < TabsThreshold) CurrentTabWidth = MaxTabWidth;
-            else CurrentTabWidth = (int) (Width / (double)Controls.Count);
+            else CurrentTabWidth = (int) (Orientation == Orientation.Horizontal ? Width : Height / (double)Controls.Count);
         }
         protected void TryRender()
         {
@@ -120,7 +128,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                 case Orientation.Vertical:
                     foreach (ITabPanel panel in Controls.Cast<ITabPanel>())
                     {
-                        panel.Location = new Point(panel.Location.Y, curPosition);
+                        panel.Location = new Point(panel.Location.X, curPosition);
                         curPosition += (panel.Height = CurrentTabWidth) + Indent;
                     }
 
@@ -157,31 +165,31 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public void OnTabMoved(object sender, TabMovedEventArgs args)
         {
             double position = Orientation == Orientation.Vertical ? args.RequesLocation.Y : args.RequesLocation.X;
-            int theMostRightPosition = Width - MaxTabWidth;
-            //проверить как работает маус мув для формы
-            if (position < 0) position = 0;
-            if (position > theMostRightPosition) position = theMostRightPosition;
+
             int index = CalcIndexFromPosition(position);
             int oldIndex = Controls.IndexOf(args.TabPanel);
+            if(index == oldIndex) return;
+
             SwitchCollectionPositions(oldIndex, index);
             if (oldIndex < index)
                  Surfacing(oldIndex, index, -CurrentTabWidth - Indent);
             else Surfacing(index, oldIndex, CurrentTabWidth + Indent);
             TryRender();
         }
-        void SwitchCollectionPositions(int oldindex, int index)
+        void SwitchCollectionPositions(int oldIndex, int index)
         {
-            ITabPanel temp = (ITabPanel) Controls[oldindex];
-            Controls[oldindex] = Controls[index];
-            Controls[index] = temp;
+            Controls.Swap(oldIndex, index);
         }
         int CalcIndexFromPosition(double position)
         {
-            return (int)Math.Round(position / Width);
+            if (position <= 0) return 0;
+            if (position >= (Count - 1) * CurrentTabWidth) return Count - 1;
+            return (int)Math.Round(position / (CurrentTabWidth + Indent));
         }
         public void OnTabSelected(object sender, TabEventArgs args)
         {
             SelectedTab = args.TabPanel;
+            SelectedTab.BringToFront();
             //SelectedTab.MouseClick += OnMouseClickOnSelectedTab;
             TabSelected.Invoke(this, args);
         }
@@ -192,6 +200,14 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         //}
 
         private event TabSelectedEventHandler ButtonAddClickedHandler;
+        private event TabEventHandler TabDisposing;
+
+        event TabEventHandler ITabCollection.TabDisposing
+        {
+            add { this.TabDisposing += value; }
+            remove { this.TabDisposing -= value; }
+        }
+
         event TabSelectedEventHandler ITabCollection.ButtonAddClickedHandler
         {
             add { this.ButtonAddClickedHandler += value; }
@@ -200,7 +216,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public void OnMouseMove(object sender, MouseEventArgs args)
         {
-            if (args.Button == MouseButtons.Left && SelectedTab.IsClicked)
+            if (SelectedTab.IsClicked && args.Button == MouseButtons.Left)
             {
                 CalcNewPosition(args.X, args.Y, SelectedTab);
             }
@@ -211,12 +227,13 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             switch (Orientation)
             {
                 case Orientation.Horizontal:
-                    tab.Location = new Point(tab.Location.X + (argsX - tab.ClickPosition.X), tab.Location.Y);
+                    tab.Location = new Point(tab.Location.X + (argsX - tab.ClickPosition.X), tab.Location.Y); ;
                     break;
                 case Orientation.Vertical:
                     tab.Location = new Point(tab.Location.X, tab.Location.Y + (argsY - tab.ClickPosition.Y));
                     break;
             }
+            OnTabMoved(null, new TabMovedEventArgs{TabPanel = tab, RequesLocation = tab.Location});
         }
 
         public void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args)
@@ -226,6 +243,43 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public void OnSizeChanged(object sender, SizeChangedHandlerArgs args)
         {
             TryRender();
+        }
+
+        public void OnTabDrop(object sender, TabEventArgs args)
+        {
+            if (RectangleContains(args.TabPanel.Location, CurrentTabWidth/2))
+            {
+                if (Contains(args.TabPanel))
+                {
+                    Render();
+                }
+                else
+                {
+                    double position = Orientation == Orientation.Horizontal
+                        ? args.TabPanel.Location.X
+                        : args.TabPanel.Location.Y;
+                    int index = CalcIndexFromPosition(position);
+                    Insert(index, args.TabPanel);
+                }
+            }
+        }
+
+        public void OnTabDisposing(object sender, TabEventArgs arg)
+        {
+            ITabPanel tab = arg.TabPanel;
+            TabUnbinding(tab);
+            TabDisposing.Invoke(this, arg);
+        }
+
+        private bool RectangleContains(Point tabPanelLocation, int delta)
+        {
+            //TODO нормаьная дельта нужна
+            return
+                (-delta < tabPanelLocation.Y && tabPanelLocation.Y < Height + delta) &&
+                (-delta < tabPanelLocation.X && tabPanelLocation.X < Width + delta);
+            //return
+            //    (Location.Y < tabPanelLocation.Y && tabPanelLocation.Y < Location.Y + Height) &&
+            //    (Location.X < tabPanelLocation.X && tabPanelLocation.X < Location.X + Width);
         }
 
         private event TabSelectedEventHandler TabSelected;
@@ -244,6 +298,16 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public int IndexOf(ITabPanel item) => Controls.IndexOf(item);
         public void Insert(int index, ITabPanel item)
         {
+            switch (Orientation)
+            {
+                case Orientation.Horizontal:
+                    item.Width = CurrentTabWidth;
+                    break;
+                case Orientation.Vertical:
+                    item.Height = CurrentTabWidth;
+                    break;
+            }
+
             TabBinding(item);
             Controls.Insert(index, item);
             SetPosition(index, item);
@@ -254,7 +318,15 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         private void SetPosition(int index, ITabPanel item)
         {
-            ChangeLocationWidth(item, index * CurrentTabWidth);
+            switch (Orientation)
+            {
+                case Orientation.Horizontal:
+                    ChangeLocationWidth(item, index * CurrentTabWidth);
+                    break;
+                case Orientation.Vertical:
+                    ChangeLocationHeight(item, index * CurrentTabWidth);
+                    break;
+            }
         }
 
         private void TabBinding(ITabPanel item)
@@ -263,13 +335,17 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             item.TabSelected += OnTabSelected;
             item.TabDeleted += OnTabDeleted;
             item.TabMoved += OnTabMoved;
+            item.TabDrop += OnTabDrop;
+            item.Disposing += OnTabDisposing;
         }
+
         private void TabUnbinding(ITabPanel item)
         {
             TabSelected -= item.Unselect;
             item.TabSelected -= OnTabSelected;
             item.TabDeleted -= OnTabDeleted;
             item.TabMoved -= OnTabMoved;
+            item.TabDrop -= OnTabDrop;
         }
 
         public void Add(ITabPanel item)
@@ -289,10 +365,8 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
         public void RemoveAt(int index)
         {
-            IControl control = Controls[index];
-            Controls.RemoveAt(index);
-            control.Dispose();
-            Surfacing(index, Controls.Count, -CurrentTabWidth - Indent);
+            Controls.RemoveAt(index, dispose: true);
+            Surfacing(index, Controls.Count - 1, -CurrentTabWidth - Indent);
             TryRender();
             if (Count > index)
             {
@@ -319,46 +393,27 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         {
             return Controls.GetEnumerator();
         }
-
-        #region IDisposable Support
         private bool _disposedValue = false; // To detect redundant calls
         private int _currentTabWidth;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
-                _disposedValue = true;
-            }
-        }
-
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~TabCollection() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
-        }
-        #endregion
 
         public void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs)
         {
             ButtonAddClickedHandler.Invoke(this, tabCollectionEventArgs);
+        }
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _tabsPanel?.Dispose();
+                SelectedTab?.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
     }
 }

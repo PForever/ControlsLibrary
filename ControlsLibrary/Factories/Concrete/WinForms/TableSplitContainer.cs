@@ -43,6 +43,8 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
                     _table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); //100%
                     _table.RowStyles.Add(new RowStyle(SizeType.Absolute, RelativePosition));
                     _table.RowStyles.Add(new RowStyle(SizeType.Percent));
+
+                    _table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent));
                     break;
 
                 case Orientation.Vertical:
@@ -50,6 +52,8 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
                     _table.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
                     _table.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize, RelativePosition));
                     _table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent));
+
+                    _table.RowStyles.Add(new RowStyle(SizeType.Percent));
                     break;
             }
         }
@@ -71,7 +75,36 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
         }
 
         public IControlList Controls { get; set; }
-        public Orientation Orientation { get; set; }
+
+        public Orientation _orientation;
+        public Orientation Orientation
+        {
+            get => _orientation;
+            set
+            {
+                _orientation = 
+                Panel1.Orientation = value;
+
+                switch (Orientation)
+                {
+                    case Orientation.Horizontal:
+                        _table.ColumnStyles[0] = new ColumnStyle(SizeType.Percent, 100F); //100%
+                        _table.RowStyles[0] = new RowStyle(SizeType.Absolute, RelativePosition);
+                        _table.RowStyles[1] = new RowStyle(SizeType.Percent);
+                        break;
+
+                    case Orientation.Vertical:
+
+                        _table.RowStyles[0] = new RowStyle(SizeType.Percent, 100F);
+                        _table.ColumnStyles[0] = new ColumnStyle(SizeType.Absolute, RelativePosition);
+                        _table.ColumnStyles[1] = new ColumnStyle(SizeType.Percent);
+                        break;
+                }
+
+                Panel2 = Panel2;
+            }
+        }
+
         public IPanel Panel1
         {
             get => (IPanel) (Controls.Count == 0 ? null : Controls[0]);

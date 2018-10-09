@@ -98,5 +98,12 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public void OnParentSizeChanged(object sender, SizeChangedHandlerArgs args)
         {
         }
+
+        public void Remove(ITabContent tabPanelTabContent)
+        {
+            Controls.Remove(tabPanelTabContent);
+            _buffer.Remove(tabPanelTabContent);
+            if (_current == tabPanelTabContent) _current = null;
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
         private WinFactory _factory;
         public Control.ControlCollection Controls;
         object IControlList.Controls { get => Controls; set => Controls = (Control.ControlCollection) value; }
+
         public IList<IControl> Collection;
 
         protected ControlList()
@@ -95,21 +96,50 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
                 Controls.SetChildIndex(Controls[i], i - 1);
             }
         }
+        public void RemoveAt(int index, bool dispose)
+        {
+            if (dispose)
+            {
+                Collection[index].Dispose();
+                Collection.RemoveAt(index);
+            }
+            else RemoveAt(index);
+        }
         public void RemoveAt(int index)
         {
             Controls.RemoveAt(index);
             Collection.RemoveAt(index);
         }
-
         public IControl this[int index]
         {
             get => Collection[index];
             set
             {
                 Controls.RemoveAt(index);
-                Insert(index, (Control) value.Control);
+                Insert(index, (Control)value.Control);
                 Collection[index] = value;
             }
+        }
+
+        public void Swap(int first, int second)
+        {
+            SwapCollection(first, second);
+            SwapControls(first, second);
+        }
+
+        private void SwapControls(int first, int second)
+        {
+            Control frstControl = Controls[first];
+            Control scndControl = Controls[second];
+            Controls.SetChildIndex(frstControl, second);
+            Controls.SetChildIndex(scndControl, first);
+        }
+
+        private void SwapCollection(int first, int second)
+        {
+            var temp = Collection[first];
+            Collection[first] = Collection[second];
+            Collection[second] = temp;
         }
     }
 }

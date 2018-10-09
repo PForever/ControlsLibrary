@@ -104,6 +104,21 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         }
 
         private event TabSelectedEventHandler TabSelected;
+        private event TabEventHandler TabDrop;
+        private event TabEventHandler Disposing;
+
+        event TabEventHandler ITabPanel.Disposing
+        {
+            add { this.Disposing += value; }
+            remove { this.Disposing -= value; }
+        }
+
+        event TabEventHandler ITabPanel.TabDrop
+        {
+            add { this.TabDrop += value; }
+            remove { this.TabDrop -= value; }
+        }
+
         public void OnMouseClick(object sender, MouseEventArgs e)
         {
             if (_panel.ClientRectangle.Contains(e.Location))
@@ -111,23 +126,26 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
                 IsClicked = true;
                 ClickPosition = e.Location;
                 if(!IsSelected) Select();
-                MovingStart();
+                //MovingStart();
             }
         }
 
         public void OnMouseCaptureChanged(object sender, EventArgs e)
         {
             if (IsClicked) IsClicked = false;
-            if (IsSelected) MovingStop();
+            if (IsSelected) TabDrop.Invoke(this, new TabEventArgs(this));
         }
 
-        public Action MovingStart { get; set; }
-        public Action MovingStop { get; set; }
         public bool IsClicked { get; set; }
         public Point ClickPosition { get; set; }
 
         public void OnMouseMove(object sender, MouseEventArgs e)
         {
+        }
+
+        public void BringToFront()
+        {
+            _panel.BringToFront();
         }
 
         event TabSelectedEventHandler ITabPanel.TabSelected
@@ -155,7 +173,9 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
 
         public void Dispose()
         {
+            Disposing.Invoke(this, new TabEventArgs(this));
             _panel?.Dispose();
+            TabContent?.Dispose();
         }
     }
 }

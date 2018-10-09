@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -80,7 +81,38 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
                                    ?? t.GetField("Event" + _suffixReg.Replace(eventInfo.Name, ""), BindingFlags.NonPublic | BindingFlags.Static); //winforms ♥
                 object field = fieldInfo.GetValue(null);
 
-                HandlRouter router = new HandlRouter(field, dstEvents, dst.Name, src.Name, eventInfo.Name);
+                HandlerRouter router = new HandlerRouter(field, dstEvents, dst.Name, src.Name, eventInfo.Name);
+                MethodInfo handlerInfo = router.GetType().GetMethod("Invoke", new Type[] { typeof(object), typeof(EventArgs) });
+                Delegate deleg = Delegate.CreateDelegate(eventInfo.EventHandlerType, router, handlerInfo, true);
+                //надо создать делегат задано сигнатуры
+                //Delegate combine = Delegate.Combine(deleg, dstEvents[field]);
+                srcEvents.AddHandler(field, deleg);
+                //eventInfo.AddEventHandler(src, deleg);
+            }
+        }
+        public static void BindingConcreteEvents(Control src, Control dst)
+        {
+            if (src == null) throw new ArgumentNullException(nameof(src));
+            if (dst == null) throw new ArgumentNullException(nameof(dst));
+
+            Type t = typeof(Control);
+
+            EventHandlerList srcEvents = (EventHandlerList)t.GetProperty("Events", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(src);
+            EventHandlerList dstEvents = (EventHandlerList)t.GetProperty("Events", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(dst);
+
+            string[] eventNames = {"MouseMove", "MouseDown", "MouseClick", "MouseUp", "MouseCaptureChanged", "KeyDown", "KeyPress", "KeyUp" };
+
+            foreach (EventInfo eventInfo in t.GetEvents(BindingFlags.Public | BindingFlags.Instance).Where(e => eventNames.Contains(e.Name)))
+            {
+
+                FieldInfo fieldInfo = t.GetField("Event" + eventInfo.Name, BindingFlags.NonPublic | BindingFlags.Static)
+                                   ?? t.GetField("Event" + _suffixReg.Replace(eventInfo.Name, ""), BindingFlags.NonPublic | BindingFlags.Static);
+
+
+
+                object field = fieldInfo.GetValue(null);
+
+                HandlerRouter router = new HandlerRouter(field, dstEvents, dst.Name, src.Name, eventInfo.Name);
                 MethodInfo handlerInfo = router.GetType().GetMethod("Invoke", new Type[] { typeof(object), typeof(EventArgs) });
                 Delegate deleg = Delegate.CreateDelegate(eventInfo.EventHandlerType, router, handlerInfo, true);
                 //надо создать делегат задано сигнатуры
@@ -90,24 +122,24 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
             }
         }
 
-        public class HandlRouter
+        public class HandlerRouter
         {
             private readonly object _key;
             private readonly EventHandlerList _eventHandlerList;
-            public string DestenationName { get; }
+            public string DestinationName { get; }
             public string SourceName { get; }
             public string EventName { get; }
 
-            public HandlRouter(object key, EventHandlerList eventHandlerList, string destenationName, string sourceName, string eventName)
+            public HandlerRouter(object key, EventHandlerList eventHandlerList, string destinationName, string sourceName, string eventName)
             {
                 _key = key;
                 _eventHandlerList = eventHandlerList;
-                DestenationName = destenationName;
+                DestinationName = destinationName;
                 SourceName = sourceName;
                 EventName = eventName;
             }
 
-            protected HandlRouter()
+            protected HandlerRouter()
             {
             }
             //TODO запускать обработчики события источника ДО обработчиков назначения
@@ -129,16 +161,18 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
 
         public static void BubblingFromParent(this Control control)
         {
-            BubblingFromParent(control, BindingEvents);
+            BubblingFromParent(control, BindingConcreteEvents);
         }
 
         public static void TunnelingFromParent(this Control control)
         {
-            TunnelingFromParent(control, BindingEvents);
+            TunnelingFromParent(control, BindingConcreteEvents);
         }
 
         public static void BubblingFromParent(this Control parent, Action<Control, Control> bindingEvents)
         {
+            parent.ControlAdded += ParentOnControlAdded;
+
             if (parent.Controls.Count == 0) return;
             foreach (Control child in parent.Controls)
             {
@@ -146,6 +180,14 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
                 child.BubblingFromParent(bindingEvents);
             }
         }
+
+        private static void ParentOnControlAdded(object sender, ControlEventArgs args)
+        {
+            if(!(sender is Control parent)) throw new WtfException();
+            BindingConcreteEvents(args.Control, parent);
+            args.Control.BubblingFromParent();
+        }
+
         public static void TunnelingFromParent(this Control parent, Action<Control, Control> bindingEvents)
         {
             if (parent.Controls.Count == 0) return;

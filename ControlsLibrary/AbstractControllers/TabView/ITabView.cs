@@ -17,5 +17,6 @@ namespace ControlsLibrary.AbstractControllers.TabView
         void OnControlLocationChanged(Point oldLocation, Point newLocation);
         void OnControlSizeChanged(Size oldSize, Size newSize);
         void OnNewTabAdded(object sender, TabEventArgs arg);
+        void OnTabDisposing(object sender, TabEventArgs arg);
     }
 }

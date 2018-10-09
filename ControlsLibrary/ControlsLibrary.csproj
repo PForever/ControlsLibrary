@@ -90,6 +90,7 @@
     <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabContent.cs" />
     <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabPanel.cs" />
     <Compile Include="Factories\Concrete\WinForms\WinHelp\ControlExtensions.cs" />
+    <Compile Include="Factories\Concrete\WinForms\WinHelp\WtfException.cs" />
     <Compile Include="Factories\ICreator.cs" />
     <Compile Include="Factories\IFactory.cs" />
     <Compile Include="Form1.cs">

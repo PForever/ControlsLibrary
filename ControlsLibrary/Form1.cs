@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ControlsLibrary.Factories.Concrete.WinForms.WinHelp;
 
@@ -17,7 +10,7 @@ namespace ControlsLibrary
         {
             InitializeComponent();
             tabView1.BubblingFromParent();
-            ControlExtensions.BindingEvents(this, tabView1);
+            ControlExtensions.BindingConcreteEvents(this, tabView1);
             this.MouseMove += OnMouseMove;
             tabView1.MouseMove += OnTabViewMouseMove;
             tabView1.Controls[0].MouseMove += OnTabCollectionMouseMove;
@@ -30,6 +23,7 @@ namespace ControlsLibrary
 
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
+            GC.Collect();
         }
 
         private void OnMouseMove2(object sender, MouseEventArgs e)

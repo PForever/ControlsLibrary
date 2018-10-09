@@ -15,5 +15,6 @@ namespace ControlsLibrary.AbstractControllers.TabView
         ITabContent Current { get; set; }
         void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args);
         void OnParentSizeChanged(object sender, SizeChangedHandlerArgs args);
+        void Remove(ITabContent tabPanelTabContent);
     }
 }

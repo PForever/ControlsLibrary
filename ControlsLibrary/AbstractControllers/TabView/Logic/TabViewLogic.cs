@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using ControlsLibrary.AbstractControllers.TabView.Tab;
 using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using ControlsLibrary.Containers;
@@ -49,7 +48,11 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
 
         public IControlList Controls { get; set; }
-        Orientation IPanel.Orientation { get; set; }
+        public Orientation Orientation
+        {
+            get => Container.Orientation;
+            set => Container.Orientation = value;
+        }
 
         public IFactory Factory { get; set; }
 
@@ -113,8 +116,16 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             Container.Panel1 = TabCollection;
             Container.Panel2 = BufferedCollection;
             Container.RelativePosition = 30;
+
+            TabCollection.TabDisposing += OnTabDisposing;
+
             ITabPanel tabPanel = Factory.CreateTabPanel();
             TabCollection.Add(tabPanel);
+        }
+
+        public void OnTabDisposing(object sender, TabEventArgs arg)
+        {
+            BufferedCollection.Remove(arg.TabPanel.TabContent);
         }
 
         private void OnSelectedTabRemoved(object sender, TabEventArgs arg)
