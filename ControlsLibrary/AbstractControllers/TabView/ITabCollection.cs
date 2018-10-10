@@ -24,15 +24,7 @@ namespace ControlsLibrary.AbstractControllers.TabView
         event TabEventHandler TabDisposing;
         #endregion
 
-        #region CollectionProperty
-
-        //TODO инкапсулировать
-        //IList<TabKvP> Tabs { get; set; }
-
-        #endregion
-
         void OnMouseMove(object sender, MouseEventArgs args);
-        void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args);
         void OnSizeChanged(object sender, SizeChangedHandlerArgs args);
         void OnTabDrop(object sender, TabEventArgs args);
         void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs);

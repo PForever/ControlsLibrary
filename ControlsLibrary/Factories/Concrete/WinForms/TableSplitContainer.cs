@@ -9,10 +9,11 @@ using Orientation = ControlsLibrary.Containers.Orientation;
 
 namespace ControlsLibrary.Factories.Concrete.WinForms
 {
-    public class TableSplitContainer : ISplitContainer
+    public partial class TableSplitContainer : ISplitContainer
     {
         private TableLayoutPanel _table;
         private int _relativePosition;
+        private SplitContainerOrientationState _stateManager;
 
         public TableSplitContainer(TableLayoutPanel table)
         {
@@ -37,25 +38,8 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
         public void InitializeComponent()
         {
             Controls = new ControlList(_table.Controls);
-            switch (Orientation)
-            {
-                case Orientation.Horizontal:
-                    _table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); //100%
-                    _table.RowStyles.Add(new RowStyle(SizeType.Absolute, RelativePosition));
-                    _table.RowStyles.Add(new RowStyle(SizeType.Percent));
-
-                    _table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent));
-                    break;
-
-                case Orientation.Vertical:
-
-                    _table.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-                    _table.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize, RelativePosition));
-                    _table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent));
-
-                    _table.RowStyles.Add(new RowStyle(SizeType.Percent));
-                    break;
-            }
+            _stateManager = new SplitContainerOrientationState(Orientation);
+            _stateManager.OnInitializeComponent(_table, RelativePosition);
         }
 
         public void OnKeyUp(object sender, KeyEventArgs e)
@@ -84,25 +68,15 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
             {
                 _orientation = 
                 Panel1.Orientation = value;
-
-                switch (Orientation)
-                {
-                    case Orientation.Horizontal:
-                        _table.ColumnStyles[0] = new ColumnStyle(SizeType.Percent, 100F); //100%
-                        _table.RowStyles[0] = new RowStyle(SizeType.Absolute, RelativePosition);
-                        _table.RowStyles[1] = new RowStyle(SizeType.Percent);
-                        break;
-
-                    case Orientation.Vertical:
-
-                        _table.RowStyles[0] = new RowStyle(SizeType.Percent, 100F);
-                        _table.ColumnStyles[0] = new ColumnStyle(SizeType.Absolute, RelativePosition);
-                        _table.ColumnStyles[1] = new ColumnStyle(SizeType.Percent);
-                        break;
-                }
-
-                Panel2 = Panel2;
+                _stateManager.Orientation = value;
+                _stateManager.OnOrientationChanged(_table, RelativePosition);
+                Reload();
             }
+        }
+
+        private void Reload()
+        {
+            Panel2 = Panel2;
         }
 
         public IPanel Panel1
@@ -125,15 +99,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
 
                 if (Panel2 != null) Controls.Remove(Panel2);
                 Controls.Add(value);
-                switch (Orientation)
-                {
-                    case Orientation.Horizontal:
-                        _table.Controls.Add((Panel)value.Control, 0, 1);
-                    break;
-                    case Orientation.Vertical:
-                        _table.Controls.Add((Panel)value.Control, 1, 0);
-                    break;
-                }
+                _stateManager.OnPanel2Changed(_table, value);
                 ((Panel) value.Control).Dock = DockStyle.Fill;
             }
         }
@@ -143,15 +109,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
             get => _relativePosition;
             set
             {
-                switch (Orientation)
-                {
-                    case Orientation.Horizontal:
-                        _table.RowStyles[0].Height = value;
-                        break;
-                    case Orientation.Vertical:
-                        _table.ColumnStyles[0].Width = value;
-                        break;
-                }
+                _stateManager.OnRelatePositionChanged(_table, value);
                 _relativePosition = value;
             }
         }

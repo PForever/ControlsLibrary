@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using ControlsLibrary.AbstractControllers.TabView;
 using ControlsLibrary.AbstractControllers.TabView.Logic;
@@ -11,15 +12,21 @@ namespace ControlsLibrary.View
     {
 
         private ITabView _tabView;
-        public int Value { get; set; }
         public TabView()
         {
             InitializeComponent();
         }
-        public void InitializeComponent()
+
+        protected void InitializeComponent()
         {
+            InitializeComponent(true);
+        }
+        protected virtual void InitializeComponent(bool init)
+        {
+            if (!init) return;
+
             this.Dock = DockStyle.Fill;
-            this.BackColor = Color.Aqua;
+            this.BackColor = Color.OrangeRed;
 
             BorderStyle = BorderStyle.Fixed3D;
             Panel TabContent()
@@ -29,7 +36,7 @@ namespace ControlsLibrary.View
                 {
                     Name = "TabContent",
                     BorderStyle = BorderStyle.FixedSingle,
-                    BackColor = Color.GreenYellow
+                    BackColor = RandomColor
                 };
                 panel.Controls.Add(page);
                 return panel;
@@ -39,7 +46,7 @@ namespace ControlsLibrary.View
                 Name = "TabsPanel",
                 BorderStyle = BorderStyle.FixedSingle,
                 Height = 30,
-                BackColor = Color.Blue
+                BackColor = Color.White
             };
             Panel ViewPanel() => new Panel
             {
@@ -68,6 +75,18 @@ namespace ControlsLibrary.View
             };
             _tabView = new TabViewLogic(factory);
             _tabView.Orientation = Orientation.Vertical;
+        }
+
+        private readonly Random _rnd = new Random();
+        private readonly byte[] _bytes = new byte[3];
+        private Color RandomColor
+        {
+            get
+            {
+
+                _rnd.NextBytes(_bytes);
+                return Color.FromArgb(_bytes[0], _bytes[1], _bytes[2]);
+            }
         }
     }
 }

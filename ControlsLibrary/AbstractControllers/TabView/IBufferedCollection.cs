@@ -13,8 +13,6 @@ namespace ControlsLibrary.AbstractControllers.TabView
         TimeSpan TimeOut { get; set; }
         int Capacity { get; set; }
         ITabContent Current { get; set; }
-        void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args);
-        void OnParentSizeChanged(object sender, SizeChangedHandlerArgs args);
         void Remove(ITabContent tabPanelTabContent);
     }
 }

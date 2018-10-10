@@ -10,65 +10,48 @@ using Orientation = ControlsLibrary.Containers.Orientation;
 
 namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
-    class TabCollectionLogic : ITabCollection
+    partial class TabCollectionLogic : TabCollectionBase
     {
-        public object Control { get => _tabsPanel.Control; }
-
+        protected override TabCollectionState StateManager { get; set; }
         const int TabsThreshold = 5;
 
-        private IPanel _tabsPanel;
-
-        private event PropertyChangedEventHandler<int> CurrentTabWidthChanged;
+        protected override IPanel TabsPanel { get; }
 
         public TabCollectionLogic(IPanel tabsPanel)
         {
             MaxTabWidth = 50;
-            _tabsPanel = tabsPanel;
+            TabsPanel = tabsPanel;
             CurrentTabWidthChanged += OnCurrentTabWidthChanged;
+            InitializeComponent();
         }
 
-        public int MaxTabWidth { get; }
-        public ITabPanel SelectedTab { get; set; }
-        public int Indent { get; set; }
+        public override int MaxTabWidth { get; }
+        public override ITabPanel SelectedTab { get; set; }
+        public override int Indent { get; set; }
 
-        public int CurrentTabWidth
+        public override int CurrentTabWidth
         {
             get => _currentTabWidth;
             set
             {
                 int oldValue = _currentTabWidth;
                 _currentTabWidth = value;
-                CurrentTabWidthChanged.Invoke(this, new PropertyChangedEventArgs<int>(oldValue, value));
+                CurrentTabWidthChangedInvoke(new PropertyChangedEventArgs<int>(oldValue, value));
             }
         }
 
-        public Orientation Orientation
+        public override Orientation Orientation
         {
-            get => _tabsPanel.Orientation;
+            get => TabsPanel.Orientation;
             set
             {
-                _tabsPanel.Orientation = value;
+                TabsPanel.Orientation = value;
+                StateManager.Orientation = value;
                 Render();
             }
         }
 
-        public IControlList Controls
-        {
-            get =>  _tabsPanel.Controls;
-            set => _tabsPanel.Controls = value;
-        }
-        IControlList IContainer.Controls { get => _tabsPanel.Controls; set => _tabsPanel.Controls = value; }
-        public string Name { get => _tabsPanel.Name; set => _tabsPanel.Name = value; }
-        public Point Location { get => _tabsPanel.Location; set => _tabsPanel.Location = value; }
-        public bool Visible { get => _tabsPanel.Visible; set => _tabsPanel.Visible = value; }
-        public int Width { get => _tabsPanel.Width; set => _tabsPanel.Width = value; }
-        public int Height { get => _tabsPanel.Height; set => _tabsPanel. Height = value; }
-        public int Count => Controls.Count;
-        public bool IsReadOnly => Controls.IsReadOnly;
-
-        ITabPanel IList<ITabPanel>.this[int index] { get => (ITabPanel)Controls[index]; set => Controls[index] = value; }
-
-        public void OnTabDeleted(object sender, TabEventArgs args)
+        public override void OnTabDeleted(object sender, TabEventArgs args)
         {
             TabUnbinding(args.TabPanel);
             //TODO возможно требует оптимизации
@@ -77,65 +60,35 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             Surfacing(index, Controls.Count - 1, -CurrentTabWidth - Indent);
             TryRender();
         }
-        private void Surfacing(int from, int to, int width)
+
+        protected override void Surfacing(int from, int to, int lenValue)
         {
-            switch (Orientation)
-            {
-                case Orientation.Horizontal:
-                    for (int i = from; i <= to; i++)
-                    {
-                        ChangeLocationWidth(Controls[i], width);
-                    }
-                    break;
-                case Orientation.Vertical:
-                    for (int i = from; i <= to; i++)
-                    {
-                        ChangeLocationHeight(Controls[i], width);
-                    }
-                    break;
-            }
+            StateManager.OnSurfacing(Controls, from, to, lenValue);
         }
-        private void CalcWidth()
+
+        protected override void CalcWidth()
         {
             if(Controls.Count < TabsThreshold) CurrentTabWidth = MaxTabWidth;
-            else CurrentTabWidth = (int) (Orientation == Orientation.Horizontal ? Width : Height / (double)Controls.Count);
+            else CurrentTabWidth = (int) (StateManager.ControllerLen(Width, Height) / (double)Controls.Count);
         }
-        protected void TryRender()
+        protected override void TryRender()
         {
             CalcWidth();
         }
 
-        protected void OnCurrentTabWidthChanged(object sender, PropertyChangedEventArgs<int> args)
+        protected override void OnCurrentTabWidthChanged(object sender, PropertyChangedEventArgs<int> args)
         {
             if (args.OldValue != args.NewValue)
             {
                 Render();
             }
         }
-        protected virtual void Render()
+        protected override void Render()
         {
-            int curPosition = 0;
-            switch (Orientation)
-            {
-                case Orientation.Horizontal:
-                    foreach (ITabPanel panel in Controls.Cast<ITabPanel>())
-                    {
-                        panel.Location = new Point(curPosition, panel.Location.Y);
-                        curPosition += (panel.Width = CurrentTabWidth) + Indent;
-                    }
-
-                    break;
-                case Orientation.Vertical:
-                    foreach (ITabPanel panel in Controls.Cast<ITabPanel>())
-                    {
-                        panel.Location = new Point(panel.Location.X, curPosition);
-                        curPosition += (panel.Height = CurrentTabWidth) + Indent;
-                    }
-
-                    break;
-            }
+            StateManager.OnRender(Controls, CurrentTabWidth, Indent);
         }
 
+/*
         protected void Render(int index)
         {
             ITabPanel panel = (ITabPanel) Controls[index];
@@ -152,17 +105,9 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                     break;
             }
         }
+*/
 
-        protected void ChangeLocationWidth(IControl control, int width)
-        {
-            control.Location = new Point(control.Location.X + width, control.Location.Y);
-        }
-        protected void ChangeLocationHeight(IControl control, int height)
-        {
-            control.Location = new Point(control.Location.X, control.Location.Y + height);
-        }
-
-        public void OnTabMoved(object sender, TabMovedEventArgs args)
+        public override void OnTabMoved(object sender, TabMovedEventArgs args)
         {
             double position = Orientation == Orientation.Vertical ? args.RequesLocation.Y : args.RequesLocation.X;
 
@@ -176,45 +121,26 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             else Surfacing(index, oldIndex, CurrentTabWidth + Indent);
             TryRender();
         }
-        void SwitchCollectionPositions(int oldIndex, int index)
+
+        protected override void SwitchCollectionPositions(int oldIndex, int index)
         {
             Controls.Swap(oldIndex, index);
         }
-        int CalcIndexFromPosition(double position)
+
+        protected override int CalcIndexFromPosition(double position)
         {
             if (position <= 0) return 0;
             if (position >= (Count - 1) * CurrentTabWidth) return Count - 1;
             return (int)Math.Round(position / (CurrentTabWidth + Indent));
         }
-        public void OnTabSelected(object sender, TabEventArgs args)
+        public override void OnTabSelected(object sender, TabEventArgs args)
         {
             SelectedTab = args.TabPanel;
             SelectedTab.BringToFront();
-            //SelectedTab.MouseClick += OnMouseClickOnSelectedTab;
-            TabSelected.Invoke(this, args);
+            TabSelectedInvoke(args);
         }
 
-        //private void OnMouseClickOnSelectedTab(object sender, MouseEventArgs arg2)
-        //{
-            
-        //}
-
-        private event TabSelectedEventHandler ButtonAddClickedHandler;
-        private event TabEventHandler TabDisposing;
-
-        event TabEventHandler ITabCollection.TabDisposing
-        {
-            add { this.TabDisposing += value; }
-            remove { this.TabDisposing -= value; }
-        }
-
-        event TabSelectedEventHandler ITabCollection.ButtonAddClickedHandler
-        {
-            add { this.ButtonAddClickedHandler += value; }
-            remove { this.ButtonAddClickedHandler -= value; }
-        }
-
-        public void OnMouseMove(object sender, MouseEventArgs args)
+        public override void OnMouseMove(object sender, MouseEventArgs args)
         {
             if (SelectedTab.IsClicked && args.Button == MouseButtons.Left)
             {
@@ -222,17 +148,9 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             }
         }
 
-        private void CalcNewPosition(int argsX, int argsY, ITabPanel tab)
+        protected override void CalcNewPosition(int argsX, int argsY, ITabPanel tab)
         {
-            switch (Orientation)
-            {
-                case Orientation.Horizontal:
-                    tab.Location = new Point(tab.Location.X + (argsX - tab.ClickPosition.X), tab.Location.Y); ;
-                    break;
-                case Orientation.Vertical:
-                    tab.Location = new Point(tab.Location.X, tab.Location.Y + (argsY - tab.ClickPosition.Y));
-                    break;
-            }
+            StateManager.OnCalcNewPosition(argsX, argsY, tab);
             OnTabMoved(null, new TabMovedEventArgs{TabPanel = tab, RequesLocation = tab.Location});
         }
 
@@ -240,12 +158,12 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         {
         }
 
-        public void OnSizeChanged(object sender, SizeChangedHandlerArgs args)
+        public override void OnSizeChanged(object sender, SizeChangedHandlerArgs args)
         {
             TryRender();
         }
 
-        public void OnTabDrop(object sender, TabEventArgs args)
+        public override void OnTabDrop(object sender, TabEventArgs args)
         {
             if (RectangleContains(args.TabPanel.Location, CurrentTabWidth/2))
             {
@@ -255,23 +173,21 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                 }
                 else
                 {
-                    double position = Orientation == Orientation.Horizontal
-                        ? args.TabPanel.Location.X
-                        : args.TabPanel.Location.Y;
+                    double position = StateManager.GetPosition(args.TabPanel.Location);
                     int index = CalcIndexFromPosition(position);
                     Insert(index, args.TabPanel);
                 }
             }
         }
 
-        public void OnTabDisposing(object sender, TabEventArgs arg)
+        public override void OnTabDisposing(object sender, TabEventArgs arg)
         {
             ITabPanel tab = arg.TabPanel;
             TabUnbinding(tab);
-            TabDisposing.Invoke(this, arg);
+            TabDisposingInvoke(arg);
         }
 
-        private bool RectangleContains(Point tabPanelLocation, int delta)
+        protected override bool RectangleContains(Point tabPanelLocation, int delta)
         {
             //TODO нормаьная дельта нужна
             return
@@ -282,31 +198,15 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             //    (Location.X < tabPanelLocation.X && tabPanelLocation.X < Location.X + Width);
         }
 
-        private event TabSelectedEventHandler TabSelected;
-        event TabSelectedEventHandler ITabCollection.TabSelected
+        protected override void InitializeComponent()
         {
-            add { this.TabSelected += value; }
-            remove { this.TabSelected -= value; }
-        }
-
-        public void InitializeComponent()
-        {
+            StateManager = new TabCollectionState(Orientation);
             TryRender();
-            _tabsPanel.InitializeComponent();
         }
 
-        public int IndexOf(ITabPanel item) => Controls.IndexOf(item);
-        public void Insert(int index, ITabPanel item)
+        public override void Insert(int index, ITabPanel item)
         {
-            switch (Orientation)
-            {
-                case Orientation.Horizontal:
-                    item.Width = CurrentTabWidth;
-                    break;
-                case Orientation.Vertical:
-                    item.Height = CurrentTabWidth;
-                    break;
-            }
+            StateManager.OnInsert(index, item, CurrentTabWidth);
 
             TabBinding(item);
             Controls.Insert(index, item);
@@ -316,20 +216,12 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             item.Select();
         }
 
-        private void SetPosition(int index, ITabPanel item)
+        protected override void SetPosition(int index, ITabPanel item)
         {
-            switch (Orientation)
-            {
-                case Orientation.Horizontal:
-                    ChangeLocationWidth(item, index * CurrentTabWidth);
-                    break;
-                case Orientation.Vertical:
-                    ChangeLocationHeight(item, index * CurrentTabWidth);
-                    break;
-            }
+            StateManager.OnSetPosition(index, item, CurrentTabWidth);
         }
 
-        private void TabBinding(ITabPanel item)
+        protected override void TabBinding(ITabPanel item)
         {
             TabSelected += item.Unselect;
             item.TabSelected += OnTabSelected;
@@ -339,7 +231,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             item.Disposing += OnTabDisposing;
         }
 
-        private void TabUnbinding(ITabPanel item)
+        protected override void TabUnbinding(ITabPanel item)
         {
             TabSelected -= item.Unselect;
             item.TabSelected -= OnTabSelected;
@@ -348,22 +240,20 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             item.TabDrop -= OnTabDrop;
         }
 
-        public void Add(ITabPanel item)
+        public override void Add(ITabPanel item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             Insert(Count, item);
         }
-        public bool Contains(ITabPanel item) => Controls.Contains(item);
-        public void CopyTo(ITabPanel[] array, int arrayIndex) => Controls.CopyTo(array, arrayIndex);
 
-        public bool Remove(ITabPanel item)
+        public override bool Remove(ITabPanel item)
         {
             if (!Controls.Contains(item)) return false;
             int index = Controls.IndexOf(item);
             RemoveAt(index);
             return true;
         }
-        public void RemoveAt(int index)
+        public override void RemoveAt(int index)
         {
             Controls.RemoveAt(index, dispose: true);
             Surfacing(index, Controls.Count - 1, -CurrentTabWidth - Indent);
@@ -377,43 +267,23 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                 ((ITabPanel)Controls.Last()).Select();
             }
         }
-        public void Clear()
+        public override void Clear()
         {
             CurrentTabWidth = MaxTabWidth;
             foreach (ITabPanel tabPanel in Controls)
                 tabPanel.Dispose();
             Controls.Clear();
         }
-        IEnumerator<ITabPanel> IEnumerable<ITabPanel>.GetEnumerator()
-        {
-            return Controls.Cast<ITabPanel>().GetEnumerator();
-        }
 
-        public IEnumerator GetEnumerator()
+        public override IEnumerator GetEnumerator()
         {
             return Controls.GetEnumerator();
         }
-        private bool _disposedValue = false; // To detect redundant calls
         private int _currentTabWidth;
 
-        public void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs)
+        public override void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs)
         {
-            ButtonAddClickedHandler.Invoke(this, tabCollectionEventArgs);
-        }
-
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _tabsPanel?.Dispose();
-                SelectedTab?.Dispose();
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
+            ButtonAddClickedHandlerInvoke(tabCollectionEventArgs);
         }
     }
 }

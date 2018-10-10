@@ -8,102 +8,58 @@ using ControlsLibrary.Containers;
 
 namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
-    internal class ViewCollectionLogic : IBufferedCollection
+    internal class ViewCollectionLogic : ViewCollectionBase
     {
         private ITabContent _current;
-        private BufferedPage _buffer;
-        object IControl.Control { get => Panel.Control; }
-        public IPanel Panel { get; set; }
+        protected override BufferedPage Buffer { get; set; }
+        protected override IPanel Panel { get; }
 
         public ViewCollectionLogic(IPanel pnl)
         {
             Panel = pnl;
-            _buffer = new BufferedPage();
+            InitializeComponent();
         }
 
-        public void Dispose()
+        protected override void InitializeComponent()
         {
-            Panel.Dispose();
+            Buffer = new BufferedPage();
         }
 
-        public string Name
-        {
-            get => Panel.Name;
-            set => Panel.Name = value;
-        }
+        public override TimeSpan TimeOut { get; set; }
+        public override int Capacity { get; set; }
 
-        public Point Location
-        {
-            get => Panel.Location;
-            set => Panel.Location = value;
-        }
-
-        public bool Visible
-        {
-            get => Panel.Visible;
-            set => Panel.Visible = value;
-        }
-
-        public int Width
-        {
-            get => Panel.Width;
-            set => Panel.Width = value;
-        }
-
-        public int Height
-        {
-            get => Panel.Height;
-            set => Panel.Height = value;
-        }
-
-        public void InitializeComponent()
-        {
-            Panel.InitializeComponent();
-        }
-
-        public IControlList Controls { get => Panel.Controls; set => Panel.Controls = value; }
-        public Orientation Orientation { get => Panel.Orientation; set => Panel.Orientation = value; }
-        public TimeSpan TimeOut { get; set; }
-        public int Capacity { get; set; }
-
-        public ITabContent Current
+        public override ITabContent Current
         {
             get => _current;
             set
             {
-                if (!_buffer.Pages.Contains(value))
+                if (value == null)
+                {
+                    _current = null;
+                    return;
+                }
+                if (!Buffer.Pages.Contains(value))
                 {
                     value.Fetch = true;
-                    _buffer.Add(value);
+                    Buffer.Add(value);
                     Controls.Add(value);
                 }
                 value.Visible = true;
-                //((System.Windows.Forms.Control) (value.Control)).BringToFront();
-                //Controls.Add(value);
-                if (_current != null) //TODO заменить на заглушку
+                if (_current != null)
                 {
-                    _buffer.Start(_current);
+                    Buffer.Start(_current);
                     _current.Visible = false;
-                    //Controls.Remove(_current);
                 }
                 _current = value;
 
             }
         }
 
-        public void OnParentLocationChanged(object sender, LocationChangedHandlerArgs args)
-        {
-        }
-
-        public void OnParentSizeChanged(object sender, SizeChangedHandlerArgs args)
-        {
-        }
-
-        public void Remove(ITabContent tabPanelTabContent)
+        public override void Remove(ITabContent tabPanelTabContent)
         {
             Controls.Remove(tabPanelTabContent);
-            _buffer.Remove(tabPanelTabContent);
-            if (_current == tabPanelTabContent) _current = null;
+            Buffer.Remove(tabPanelTabContent);
+            if (Current == tabPanelTabContent) Current = null;
         }
     }
 }

@@ -194,9 +194,9 @@ namespace ControlsLibrary.Factories.Concrete
         {
             ITabView tabView = new TabViewLogic(this);
             Panel panel = (Panel) tabView.Control;
-            panel.LocationChanged += (sender, arg) =>
-                tabView.OnControlLocationChanged(Point.Empty, panel.Location);
-            panel.SizeChanged += (sender, arg) => tabView.OnControlSizeChanged(Size.Empty, panel.Size);
+            //panel.LocationChanged += (sender, arg) =>
+            //    tabView.OnControlLocationChanged(Point.Empty, panel.Location);
+            //panel.SizeChanged += (sender, arg) => tabView.OnControlSizeChanged(Size.Empty, panel.Size);
             return tabView;
         }
     }

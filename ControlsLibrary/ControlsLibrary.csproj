@@ -62,9 +62,12 @@
     <Compile Include="AbstractControllers\TabView\Logic\PropertyChangedEventArgs.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\PropertyChangedEventHandler.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\SizeChangedHandlerArgs.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\TabCollectionBase.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\TabCollectionLogic.TabCollectionState.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\TabViewLogicBase.cs" />
+    <Compile Include="AbstractControllers\TabView\Logic\ViewCollectionBase.cs" />
     <Compile Include="Containers\Position.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabSelectedEventHandler.cs" />
-    <Compile Include="Containers\TabKvP.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabMoveEventArgs.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabSelectedEventArgs.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\ITabContent.cs" />
@@ -80,6 +83,7 @@
     </Compile>
     <Compile Include="Factories\Concrete\WinForms\Containers\ControlList.cs" />
     <Compile Include="Factories\Concrete\WinForms\TableSplitContainer.cs" />
+    <Compile Include="Factories\Concrete\WinForms\TableSplitContainer.SplitContainerOrientationState.cs" />
     <Compile Include="Factories\Concrete\WinForms\TabView\Tab\SimplePanel.cs" />
     <Compile Include="Factories\Concrete\WinFactory.cs" />
     <Compile Include="AbstractControllers\TabView\ISplitContainer.cs" />

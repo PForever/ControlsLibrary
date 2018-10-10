@@ -6,107 +6,73 @@ using ControlsLibrary.Factories;
 
 namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
-    class TabViewLogic : ITabView, ICreator
+    class TabViewLogic : TabViewLogicBase
     {
-        public object Control { get => Container.Control; }
-        protected event SizeChangedHandler SizeChanged;
-        protected event LocationChangedHandler LocationChanged;
-        public ISplitContainer Container;
-        private ITabCollection _tabCollection;
-        private IBufferedCollection _bufferedCollection;
+        public override object Control { get => Container.Control; }
+        protected override ISplitContainer Container { get; }
 
         public TabViewLogic(IFactory factory)
         {
             Factory = factory;
+            Container = Factory.CreateSplitContainer(false);
+            TabCollection = Factory.CreateTabCollection();
+            BufferedCollection = Factory.CreateBufferedCollection();
+
             InitializeComponent();
         }
 
-        public Position Position { get; set; }
+        public override Position Position { get; set; }
 
-        public ITabCollection TabCollection
-        {
-            get => _tabCollection;
-            set
-            {
-                _tabCollection = value;
+        protected override ITabCollection TabCollection { get; }
 
-                LocationChanged += _tabCollection.OnParentLocationChanged;
-                SizeChanged += _tabCollection.OnSizeChanged;
-            }
-        }
+        protected override IBufferedCollection BufferedCollection { get; }
 
-        public IBufferedCollection BufferedCollection
-        {
-            get => _bufferedCollection;
-            set
-            {
-                _bufferedCollection = value;
-                
-                LocationChanged += _bufferedCollection.OnParentLocationChanged;
-                SizeChanged += _bufferedCollection.OnParentSizeChanged;
-            }
-        }
-
-        public IControlList Controls { get; set; }
-        public Orientation Orientation
+        public override IControlList Controls { get; set; }
+        public override Orientation Orientation
         {
             get => Container.Orientation;
             set => Container.Orientation = value;
         }
 
-        public IFactory Factory { get; set; }
+        public override IFactory Factory { get; }
 
-        public string Name
+        public override string Name
         {
             get => Container.Name;
             set => Container.Name = value;
         }
 
-        public Point Location
+        public override Point Location
         {
             get => Container.Location;
             set
             {
                 Point oldValue = Container.Location;
                 Container.Location = value;
-                LocationChanged?.Invoke(this, new LocationChangedHandlerArgs(value, oldValue));
             }
         }
 
-        public void OnControlLocationChanged(Point oldLocation, Point newLocation)
-        {
-            LocationChanged?.Invoke(this, new LocationChangedHandlerArgs(newLocation, oldLocation));
-        }
-
-        public void OnControlSizeChanged(Size oldSize, Size newSize)
-        {
-            SizeChanged?.Invoke(this, new SizeChangedHandlerArgs(newSize, oldSize));
-        }
-
-        public bool Visible
+        public override bool Visible
         {
             get => Container.Visible;
             set => Container.Visible = value;
         }
 
         //TODO изменение шириы и высоты должно вызывать перерисовку табов внутри коллекции. Лучше всего сделать ивент
-        public int Width
+        public override int Width
         {
             get => Container.Width;
             set => Container.Width = value;
         }
         
-        public int Height
+        public override int Height
         {
             get => Container.Height;
             set => Container.Height = value;
         }
 
-        public void InitializeComponent()
+        protected override void InitializeComponent()
         {
-            Container = Factory.CreateSplitContainer(false);
-            TabCollection = Factory.CreateTabCollection();
-            BufferedCollection = Factory.CreateBufferedCollection();
 
             TabCollection.TabSelected += OnTabSelected;
             Container.AddNewTab += OnNewTabAdded;
@@ -123,40 +89,36 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             TabCollection.Add(tabPanel);
         }
 
-        public void OnTabDisposing(object sender, TabEventArgs arg)
+        protected override void OnTabDisposing(object sender, TabEventArgs arg)
         {
             BufferedCollection.Remove(arg.TabPanel.TabContent);
         }
 
-        private void OnSelectedTabRemoved(object sender, TabEventArgs arg)
+        protected override void OnSelectedTabRemoved(object sender, TabEventArgs arg)
         {
             TabCollection.Remove(TabCollection.SelectedTab);
         }
 
-        public void OnNewTabAdded(object sender, TabEventArgs arg)
+        protected override void OnNewTabAdded(object sender, TabEventArgs arg)
         {
             ITabPanel item = arg.TabPanel ?? Factory.CreateTabPanel();
             TabCollection.Add(item);
         }
 
-        public void OnTabSelected(object sender, TabEventArgs args)
+        protected override void OnTabSelected(object sender, TabEventArgs args)
         {
             Show(args.TabPanel.TabContent);
         }
 
-        public void Show(ITabContent tabContent = null)
+        public override void Show(ITabContent tabContent = null)
         {
             BufferedCollection.Current = tabContent;
         }
 
-        public void Dispose()
+
+        protected override void Dispose(bool dispose)
         {
-            Container?.Dispose();
-            TabCollection?.Dispose();
-            BufferedCollection?.Dispose();
+            base.Dispose();
         }
     }
-
-    internal delegate void LocationChangedHandler(object sender, LocationChangedHandlerArgs args);
-    internal delegate void SizeChangedHandler(object sender, SizeChangedHandlerArgs args);
 }
