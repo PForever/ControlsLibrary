@@ -12,19 +12,19 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
     internal abstract partial class TabCollectionBase : ITabCollection
     {
-        public virtual int MaxTabWidth { get; }
+        public virtual int MaxTabLen { get; }
 
         public abstract ITabPanel SelectedTab { get; set; }
         public abstract int Indent { get; set; }
-        public abstract int CurrentTabWidth { get; set; }
+        public abstract int CurrentTabLen { get; set; }
         public abstract Orientation Orientation { get; set; }
         protected abstract TabCollectionState StateManager { get; set; }
         protected abstract IPanel TabsPanel { get; }
         public abstract void OnTabDeleted(object sender, TabEventArgs args);
-        protected abstract void Surfacing(int from, int to, int lenValue);
-        protected abstract void CalcWidth();
-        protected abstract void TryRender();
-        protected abstract void OnCurrentTabWidthChanged(object sender, PropertyChangedEventArgs<int> args);
+        protected abstract void Surfacing(int @from, int to, int lenValue);
+        protected abstract void CalcLen();
+        protected abstract bool TryRender();
+        protected abstract void OnCurrentTabLenChanged(object sender, PropertyChangedEventArgs<int> args);
         protected abstract void Render();
         public abstract void OnTabMoved(object sender, TabMovedEventArgs args);
         protected abstract void SwitchCollectionPositions(int oldIndex, int index);
@@ -106,15 +106,15 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         #region Events
 
-        private event PropertyChangedEventHandler<int> _CurrentTabWidthChanged;
-        protected event PropertyChangedEventHandler<int> CurrentTabWidthChanged
+        private event PropertyChangedEventHandler<int> _CurrentTabLenChanged;
+        protected event PropertyChangedEventHandler<int> CurrentTabLenChanged
         {
-            add { this._CurrentTabWidthChanged += value; }
-            remove { this._CurrentTabWidthChanged -= value; }
+            add { this._CurrentTabLenChanged += value; }
+            remove { this._CurrentTabLenChanged -= value; }
         }
-        protected virtual void CurrentTabWidthChangedInvoke(PropertyChangedEventArgs<int> args)
+        protected virtual void CurrentTabLenChangedInvoke(PropertyChangedEventArgs<int> args)
         {
-            _CurrentTabWidthChanged.Invoke(this, args);
+            _CurrentTabLenChanged.Invoke(this, args);
         }
 
         private event TabEventHandler _TabDisposing;

@@ -11,7 +11,7 @@ namespace ControlsLibrary.AbstractControllers.TabView
     public interface ITabCollection : IPanel, IList<ITabPanel>
     {
         #region TabProperty
-        int MaxTabWidth { get; }
+        int MaxTabLen { get; }
         ITabPanel SelectedTab { get; set; }
 
         #endregion

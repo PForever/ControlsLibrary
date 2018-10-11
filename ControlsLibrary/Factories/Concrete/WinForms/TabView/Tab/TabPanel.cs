@@ -4,8 +4,10 @@ using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using ControlsLibrary.Containers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using ControlsLibrary.Factories.Concrete.WinForms.Containers;
 using Orientation = ControlsLibrary.Containers.Orientation;
@@ -30,6 +32,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
             _factory = factory;
             _panel = panel;
             TabContent = tabContent;
+            InitializeComponent();
         }
 
         object IControl.Control { get => _panel; /*set => _panel = (Panel)value;*/ }
@@ -136,6 +139,15 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
             if (IsSelected) TabDrop.Invoke(this, new TabEventArgs(this));
         }
 
+        public void ChangeLocation(Point point)
+        {
+            if (_rendering != null && _rendering.Status == TaskStatus.Running) _rendering = _rendering.ContinueWith((t) => MoveAnimation(point));
+            else _rendering = MoveAnimation(point);
+        }
+
+        private Task _rendering;
+        public Func<Point, Task> MoveAnimation { get; set; }
+
         public bool IsClicked { get; set; }
         public Point ClickPosition { get; set; }
 
@@ -162,6 +174,40 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
 
         public void InitializeComponent()
         {
+            MoveAnimation = MoveAnimationHandlerAsync;
+        }
+
+        private const int _speed = 3;
+        private const int _step = 2;
+        private const int _delte = 0;
+        private async Task MoveAnimationHandlerAsync(Point point)
+        {
+            int dY = point.Y - Location.Y;
+            int dX = point.X - Location.X;
+            int stepY = dY == 0 ? 0 : _step * Math.Sign(dY);
+            int stepX = dX == 0 ? 0 : _step * Math.Sign(dX);
+
+            int stepsY = dY == 0 ? 0 : dY / stepY;
+            int stepsX = dX == 0 ? 0 : dX / stepX;
+
+            //TODO шаги должны быть разные
+            int steps = Math.Max(stepsX, stepsY);
+
+            for (int i = 0; i < steps; i++)
+            {
+                AddLocation(stepX, stepY);
+                await Task.Delay(_speed);
+            }
+        }
+        //TODO перенести лишнюю логику в хелп
+        private void AddLocation(float stepX, float stepY)
+        {
+            Location = new Point((int)(Location.X + stepX), (int)(Location.Y + stepY));
+        }
+
+        private double ApproxDistance(Point a, Point b)
+        {
+            return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
         }
 
         public void Select()

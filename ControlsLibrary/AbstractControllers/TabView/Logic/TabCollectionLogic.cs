@@ -13,30 +13,38 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
     partial class TabCollectionLogic : TabCollectionBase
     {
         protected override TabCollectionState StateManager { get; set; }
-        const int TabsThreshold = 5;
+
+        //TODO ивент изменения размера
+        private int TabsThreshold => StateManager.OnUpdateThreshold(Width, Height, MaxTabLen, Percent);
+
+        private const int LenConst = 50;
+        private const float Percent = 0.8f;
 
         protected override IPanel TabsPanel { get; }
 
         public TabCollectionLogic(IPanel tabsPanel)
         {
-            MaxTabWidth = 50;
             TabsPanel = tabsPanel;
-            CurrentTabWidthChanged += OnCurrentTabWidthChanged;
+            CurrentTabLenChanged += OnCurrentTabLenChanged;
             InitializeComponent();
         }
 
-        public override int MaxTabWidth { get; }
+        public override int MaxTabLen => LenConst;
         public override ITabPanel SelectedTab { get; set; }
         public override int Indent { get; set; }
 
-        public override int CurrentTabWidth
+        private int _currentTabWidth;
+        public override int CurrentTabLen
         {
             get => _currentTabWidth;
             set
             {
                 int oldValue = _currentTabWidth;
                 _currentTabWidth = value;
-                CurrentTabWidthChangedInvoke(new PropertyChangedEventArgs<int>(oldValue, value));
+                if (oldValue != value)
+                {
+                    CurrentTabLenChangedInvoke(new PropertyChangedEventArgs<int>(oldValue, value));
+                }
             }
         }
 
@@ -54,10 +62,9 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public override void OnTabDeleted(object sender, TabEventArgs args)
         {
             TabUnbinding(args.TabPanel);
-            //TODO возможно требует оптимизации
             int index = Controls.IndexOf(args.TabPanel);
             Controls.RemoveAt(index);
-            Surfacing(index, Controls.Count - 1, -CurrentTabWidth - Indent);
+            Surfacing(index, Controls.Count - 1, -CurrentTabLen - Indent);
             TryRender();
         }
 
@@ -66,26 +73,25 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             StateManager.OnSurfacing(Controls, from, to, lenValue);
         }
 
-        protected override void CalcWidth()
+        protected override void CalcLen()
         {
-            if(Controls.Count < TabsThreshold) CurrentTabWidth = MaxTabWidth;
-            else CurrentTabWidth = (int) (StateManager.ControllerLen(Width, Height) / (double)Controls.Count);
+            if(Controls.Count < TabsThreshold) CurrentTabLen = MaxTabLen;
+            else CurrentTabLen = (int) (StateManager.ControllerLen(Width, Height) / (double)Controls.Count);
         }
-        protected override void TryRender()
+        protected override bool TryRender()
         {
-            CalcWidth();
+            int old = CurrentTabLen;
+            CalcLen();
+            return (CurrentTabLen != old);
         }
 
-        protected override void OnCurrentTabWidthChanged(object sender, PropertyChangedEventArgs<int> args)
+        protected override void OnCurrentTabLenChanged(object sender, PropertyChangedEventArgs<int> args)
         {
-            if (args.OldValue != args.NewValue)
-            {
-                Render();
-            }
+            Render();
         }
         protected override void Render()
         {
-            StateManager.OnRender(Controls, CurrentTabWidth, Indent);
+            StateManager.OnRender(Controls, CurrentTabLen, Indent);
         }
 
 /*
@@ -117,9 +123,9 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
             SwitchCollectionPositions(oldIndex, index);
             if (oldIndex < index)
-                 Surfacing(oldIndex, index, -CurrentTabWidth - Indent);
-            else Surfacing(index, oldIndex, CurrentTabWidth + Indent);
-            TryRender();
+                 Surfacing(oldIndex, index - 1, -CurrentTabLen - Indent);
+            else Surfacing(index + 1, oldIndex, CurrentTabLen + Indent);
+            SelectedTab.BringToFront();
         }
 
         protected override void SwitchCollectionPositions(int oldIndex, int index)
@@ -130,8 +136,8 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         protected override int CalcIndexFromPosition(double position)
         {
             if (position <= 0) return 0;
-            if (position >= (Count - 1) * CurrentTabWidth) return Count - 1;
-            return (int)Math.Round(position / (CurrentTabWidth + Indent));
+            if (position >= (Count - 1) * CurrentTabLen) return Count - 1;
+            return (int)Math.Round(position / (CurrentTabLen + Indent));
         }
         public override void OnTabSelected(object sender, TabEventArgs args)
         {
@@ -165,7 +171,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public override void OnTabDrop(object sender, TabEventArgs args)
         {
-            if (RectangleContains(args.TabPanel.Location, CurrentTabWidth/2))
+            if (RectangleContains(args.TabPanel.Location, CurrentTabLen/2))
             {
                 if (Contains(args.TabPanel))
                 {
@@ -206,19 +212,21 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public override void Insert(int index, ITabPanel item)
         {
-            StateManager.OnInsert(index, item, CurrentTabWidth);
+            StateManager.OnInsert(index, item, CurrentTabLen);
 
             TabBinding(item);
             Controls.Insert(index, item);
-            SetPosition(index, item);
-            if(index < Count - 1) Surfacing(Controls.Count - 1, index + 1, CurrentTabWidth + Indent);
-            TryRender();
+            if (TryRender()) { }
+            else if (index < Count - 1) Surfacing(Controls.Count - 1, index + 1, CurrentTabLen + Indent);
+            else SetPosition(index, item);
+            //TODO when rendered
             item.Select();
         }
 
         protected override void SetPosition(int index, ITabPanel item)
         {
-            StateManager.OnSetPosition(index, item, CurrentTabWidth);
+            StateManager.OnSetStartPosition(index - 1, item, CurrentTabLen);
+            StateManager.OnSetPosition(index, item, CurrentTabLen);
         }
 
         protected override void TabBinding(ITabPanel item)
@@ -256,7 +264,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public override void RemoveAt(int index)
         {
             Controls.RemoveAt(index, dispose: true);
-            Surfacing(index, Controls.Count - 1, -CurrentTabWidth - Indent);
+            Surfacing(index, Controls.Count - 1, -CurrentTabLen - Indent);
             TryRender();
             if (Count > index)
             {
@@ -269,7 +277,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         }
         public override void Clear()
         {
-            CurrentTabWidth = MaxTabWidth;
+            CurrentTabLen = MaxTabLen;
             foreach (ITabPanel tabPanel in Controls)
                 tabPanel.Dispose();
             Controls.Clear();
@@ -279,7 +287,6 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         {
             return Controls.GetEnumerator();
         }
-        private int _currentTabWidth;
 
         public override void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs)
         {

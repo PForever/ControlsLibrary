@@ -21,26 +21,11 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             InitializeComponent();
         }
 
-        public override Position Position { get; set; }
-
         protected override ITabCollection TabCollection { get; }
 
         protected override IBufferedCollection BufferedCollection { get; }
 
         public override IControlList Controls { get; set; }
-        public override Orientation Orientation
-        {
-            get => Container.Orientation;
-            set => Container.Orientation = value;
-        }
-
-        public override IFactory Factory { get; }
-
-        public override string Name
-        {
-            get => Container.Name;
-            set => Container.Name = value;
-        }
 
         public override Point Location
         {
@@ -51,25 +36,14 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                 Container.Location = value;
             }
         }
-
-        public override bool Visible
+        public override Orientation Orientation
         {
-            get => Container.Visible;
-            set => Container.Visible = value;
+            get => Container.Orientation;
+            set => Container.Orientation = value;
         }
 
-        //TODO изменение шириы и высоты должно вызывать перерисовку табов внутри коллекции. Лучше всего сделать ивент
-        public override int Width
-        {
-            get => Container.Width;
-            set => Container.Width = value;
-        }
-        
-        public override int Height
-        {
-            get => Container.Height;
-            set => Container.Height = value;
-        }
+        public override IFactory Factory { get; }
+
 
         protected override void InitializeComponent()
         {

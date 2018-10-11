@@ -1,7 +1,9 @@
 ﻿using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using ControlsLibrary.AbstractControllers.TabView.Tab;
 using ControlsLibrary.Containers;
+using ControlsLibrary.Factories.Concrete.WinForms.WinHelp;
 
 namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
@@ -23,16 +25,39 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                     case Orientation.Horizontal:
                         for (int i = from; i <= to; i++)
                         {
-                            ChangeLocationWidth(controls[i], value);
+                            ChangeLocationWidth((ITabPanel)controls[i], value);
                         }
                         break;
                     case Orientation.Vertical:
                         for (int i = from; i <= to; i++)
                         {
-                            ChangeLocationHeight(controls[i], value);
+                            ChangeLocationHeight((ITabPanel)controls[i], value);
                         }
                         break;
                 }
+            }
+
+            public void OnSetStartPosition(int index, ITabPanel item, int currentTabLent)
+            {
+                switch (Orientation)
+                {
+                    case Orientation.Horizontal:
+                        SetStartLocationWidth(item, index * currentTabLent);
+                        break;
+                    case Orientation.Vertical:
+                        SetStartLocationHeight(item, index * currentTabLent);
+                        break;
+                }
+            }
+
+
+            private void SetStartLocationWidth(ITabPanel control, int width)
+            {
+                control.Location = new Point(control.Location.X + width, control.Location.Y);
+            }
+            private void SetStartLocationHeight(ITabPanel control, int height)
+            {
+                control.Location = new Point(control.Location.X, control.Location.Y + height);
             }
 
             public void OnSetPosition(int index, ITabPanel item, int currentTabLent)
@@ -48,13 +73,15 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                 }
             }
 
-            private void ChangeLocationWidth(IControl control, int width)
+            private void ChangeLocationWidth(ITabPanel control, int width)
             {
-                control.Location = new Point(control.Location.X + width, control.Location.Y);
+                Point point = new Point(control.Location.X + width, control.Location.Y);
+                control.ChangeLocation(point);
             }
-            private void ChangeLocationHeight(IControl control, int height)
+            private void ChangeLocationHeight(ITabPanel control, int height)
             {
-                control.Location = new Point(control.Location.X, control.Location.Y + height);
+                Point point = new Point(control.Location.X, control.Location.Y + height);
+                control.ChangeLocation(point);
             }
 
             public int ControllerLen(int width, int height)
@@ -83,18 +110,20 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                     case Orientation.Horizontal:
                         foreach (ITabPanel panel in controls.Cast<ITabPanel>())
                         {
-                            panel.Location = new Point(curPosition, panel.Location.Y);
+                            Point point = new Point(curPosition, panel.Location.Y);
+                            panel.ChangeLocation(point);
                             curPosition += (panel.Width = currentTabLen) + intend;
                         }
+                        //TODO анимация
 
                         break;
                     case Orientation.Vertical:
                         foreach (ITabPanel panel in controls.Cast<ITabPanel>())
                         {
-                            panel.Location = new Point(panel.Location.X, curPosition);
+                            Point point = new Point(panel.Location.X, curPosition);
+                            panel.ChangeLocation(point);
                             curPosition += (panel.Height = currentTabLen) + intend;
                         }
-
                         break;
                 }
             }
@@ -116,6 +145,18 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                 return Orientation == Orientation.Horizontal
                     ? location.X
                     : location.Y;
+            }
+
+            public int OnUpdateThreshold(int width, int height, int maxTabWidth, float percent)
+            {
+                switch (Orientation)
+                {
+                    case Orientation.Horizontal:
+                        return (int) (percent * width / maxTabWidth);
+                    case Orientation.Vertical:
+                        return (int) (percent * height / maxTabWidth);
+                }
+                throw new WtfException();
             }
         }
     }
