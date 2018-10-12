@@ -21,7 +21,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         protected abstract TabCollectionState StateManager { get; set; }
         protected abstract IPanel TabsPanel { get; }
         public abstract void OnTabDeleted(object sender, TabEventArgs args);
-        protected abstract void Surfacing(int @from, int to, int lenValue);
+        protected abstract void Surfacing(int from, int to);
         protected abstract void CalcLen();
         protected abstract bool TryRender();
         protected abstract void OnCurrentTabLenChanged(object sender, PropertyChangedEventArgs<int> args);

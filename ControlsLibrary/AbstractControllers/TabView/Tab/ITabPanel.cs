@@ -22,7 +22,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Tab
         void OnMouseClick(object sender, MouseEventArgs e);
         void OnMouseCaptureChanged(object sender, EventArgs e);
         void ChangeLocation(Point point);
-        Func<Point, Task> MoveAnimation { get; set; }
+        Func<Point, Task> MoveAnimation { set; }
         bool IsClicked { get; set; }
         Point ClickPosition { get; set; }
         void OnMouseMove(object sender, MouseEventArgs e);

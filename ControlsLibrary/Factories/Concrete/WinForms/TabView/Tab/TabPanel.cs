@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ControlsLibrary.Factories.Concrete.WinForms.Containers;
@@ -47,7 +48,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
             get => _isSelected;
             private set
             {
-                _panel.BackColor = value ? Color.BlueViolet : Color.Gray;
+                _panel.BackColor = value ? Color.DarkRed : Color.LightGray;
                 _isSelected = value;
             }
         }
@@ -139,9 +140,10 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
             if (IsSelected) TabDrop.Invoke(this, new TabEventArgs(this));
         }
 
+        private static SynchronizationContext _context = SynchronizationContext.Current;
         public void ChangeLocation(Point point)
         {
-            if (_rendering != null && _rendering.Status == TaskStatus.Running) _rendering = _rendering.ContinueWith((t) => MoveAnimation(point));
+            if (_rendering != null && !_rendering.IsCompleted) _rendering = _rendering.ContinueWith(t => MoveAnimation(point));
             else _rendering = MoveAnimation(point);
         }
 
@@ -178,7 +180,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         }
 
         private const int _speed = 3;
-        private const int _step = 2;
+        private const int _step = 10;
         private const int _delte = 0;
         private async Task MoveAnimationHandlerAsync(Point point)
         {
@@ -198,11 +200,15 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
                 AddLocation(stepX, stepY);
                 await Task.Delay(_speed);
             }
+            if(_context != SynchronizationContext.Current) _context.Send(state => Location = (Point)state, point);
+            else Location = point;
         }
         //TODO перенести лишнюю логику в хелп
         private void AddLocation(float stepX, float stepY)
         {
-            Location = new Point((int)(Location.X + stepX), (int)(Location.Y + stepY));
+            Point point = new Point((int)(Location.X + stepX), (int)(Location.Y + stepY));
+            if (_context != SynchronizationContext.Current) _context.Send(state => Location = (Point)state, point);
+            else Location = point;
         }
 
         private double ApproxDistance(Point a, Point b)

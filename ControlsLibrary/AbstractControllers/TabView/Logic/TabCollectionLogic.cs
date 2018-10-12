@@ -64,13 +64,13 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             TabUnbinding(args.TabPanel);
             int index = Controls.IndexOf(args.TabPanel);
             Controls.RemoveAt(index);
-            Surfacing(index, Controls.Count - 1, -CurrentTabLen - Indent);
+            Surfacing(index, Controls.Count - 1);
             TryRender();
         }
 
-        protected override void Surfacing(int from, int to, int lenValue)
+        protected override void Surfacing(int from, int to)
         {
-            StateManager.OnSurfacing(Controls, from, to, lenValue);
+            StateManager.OnSurfacing(Controls, from, to, CurrentTabLen, Indent);
         }
 
         protected override void CalcLen()
@@ -94,24 +94,14 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             StateManager.OnRender(Controls, CurrentTabLen, Indent);
         }
 
-/*
-        protected void Render(int index)
+
+        protected void Render(ITabPanel panel)
         {
-            ITabPanel panel = (ITabPanel) Controls[index];
-            int curPosition = index * (CurrentTabWidth + Indent);
-            switch (Orientation)
-            {
-                case Orientation.Horizontal:
-                    Controls[index].Location = new Point(curPosition, panel.Location.Y);
-                    panel.Width = CurrentTabWidth;
-                    break;
-                case Orientation.Vertical:
-                    panel.Location = new Point(panel.Location.Y, curPosition);
-                    panel.Height = CurrentTabWidth;
-                    break;
-            }
+            double position = StateManager.GetPosition(panel.Location);
+            int index = CalcIndexFromPosition(position);
+            StateManager.OnRender(panel, CurrentTabLen, Indent, index);
         }
-*/
+
 
         public override void OnTabMoved(object sender, TabMovedEventArgs args)
         {
@@ -123,8 +113,8 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
             SwitchCollectionPositions(oldIndex, index);
             if (oldIndex < index)
-                 Surfacing(oldIndex, index - 1, -CurrentTabLen - Indent);
-            else Surfacing(index + 1, oldIndex, CurrentTabLen + Indent);
+                 Surfacing(oldIndex, index - 1);
+            else Surfacing(index + 1, oldIndex);
             SelectedTab.BringToFront();
         }
 
@@ -175,7 +165,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             {
                 if (Contains(args.TabPanel))
                 {
-                    Render();
+                    Render(args.TabPanel);
                 }
                 else
                 {
@@ -216,8 +206,9 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
             TabBinding(item);
             Controls.Insert(index, item);
+            StateManager.OnSetStartPosition(index - 1, item, CurrentTabLen, Indent);
             if (TryRender()) { }
-            else if (index < Count - 1) Surfacing(Controls.Count - 1, index + 1, CurrentTabLen + Indent);
+            else if (index < Count - 1) Surfacing(Controls.Count - 1, index + 1);
             else SetPosition(index, item);
             //TODO when rendered
             item.Select();
@@ -225,8 +216,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         protected override void SetPosition(int index, ITabPanel item)
         {
-            StateManager.OnSetStartPosition(index - 1, item, CurrentTabLen);
-            StateManager.OnSetPosition(index, item, CurrentTabLen);
+            StateManager.OnSetPosition(index, item, CurrentTabLen, Indent);
         }
 
         protected override void TabBinding(ITabPanel item)
@@ -264,7 +254,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public override void RemoveAt(int index)
         {
             Controls.RemoveAt(index, dispose: true);
-            Surfacing(index, Controls.Count - 1, -CurrentTabLen - Indent);
+            Surfacing(index, Controls.Count - 1);
             TryRender();
             if (Count > index)
             {
