@@ -8,20 +8,34 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 {
     class TabViewLogic : TabViewLogicBase
     {
+        private ITabCollection _tabCollection;
         public override object Control { get => Container.Control; }
         protected override ISplitContainer Container { get; }
 
-        public TabViewLogic(IFactory factory)
+        public TabViewLogic(IFactory factory) : this(factory, factory.CreateTabPanel())
+        {
+        }
+        public TabViewLogic(IFactory factory, ITabPanel tab)
         {
             Factory = factory;
-            Container = Factory.CreateSplitContainer(false);
-            TabCollection = Factory.CreateTabCollection();
-            BufferedCollection = Factory.CreateBufferedCollection();
+            Container = factory.CreateSplitContainer(false);
+            TabCollection = factory.CreateTabCollection();
+            BufferedCollection = factory.CreateBufferedCollection();
 
             InitializeComponent();
+
+            TabCollection.Add(tab);
         }
 
-        protected override ITabCollection TabCollection { get; }
+        protected override ITabCollection TabCollection
+        {
+            set
+            {
+                _tabCollection = value;
+                _tabCollection.Parent = this;
+            }
+            get => _tabCollection;
+        }
 
         protected override IBufferedCollection BufferedCollection { get; }
 
@@ -58,9 +72,6 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             Container.RelativePosition = 30;
 
             TabCollection.TabDisposing += OnTabDisposing;
-
-            ITabPanel tabPanel = Factory.CreateTabPanel();
-            TabCollection.Add(tabPanel);
         }
 
         protected override void OnTabDisposing(object sender, TabEventArgs arg)

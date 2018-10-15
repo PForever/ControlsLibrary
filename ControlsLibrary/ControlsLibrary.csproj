@@ -47,6 +47,7 @@
     <Compile Include="AbstractControllers\TabView\ISpliter.cs" />
     <Compile Include="AbstractControllers\TabView\ITabCollection.cs" />
     <Compile Include="AbstractControllers\TabView\ITabView.cs" />
+    <Compile Include="AbstractControllers\TabView\IWindow.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\BufferedPage.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\LocationChangedHandlerArgs.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\PropertyChangedEventArgs.cs" />
@@ -56,6 +57,8 @@
     <Compile Include="AbstractControllers\TabView\Logic\TabCollectionLogic.TabCollectionState.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\TabViewLogicBase.cs" />
     <Compile Include="AbstractControllers\TabView\Logic\ViewCollectionBase.cs" />
+    <Compile Include="AbstractControllers\TabView\Tab\Events\TabDropEventHandler.cs" />
+    <Compile Include="AbstractControllers\TabView\Tab\Events\TabDropEventArgs.cs" />
     <Compile Include="Containers\Position.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabSelectedEventHandler.cs" />
     <Compile Include="AbstractControllers\TabView\Tab\Events\TabMoveEventArgs.cs" />
@@ -83,6 +86,7 @@
     <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabsPanel.cs" />
     <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabContent.cs" />
     <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabPanel.cs" />
+    <Compile Include="Factories\Concrete\WinForms\TabView\Tab\TabWindow.cs" />
     <Compile Include="Factories\Concrete\WinForms\WinHelp\ControlExtensions.cs" />
     <Compile Include="Factories\Concrete\WinForms\WinHelp\WtfException.cs" />
     <Compile Include="Factories\ICreator.cs" />

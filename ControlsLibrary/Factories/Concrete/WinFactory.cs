@@ -8,9 +8,12 @@ using System.Collections.Generic;
 using ControlsLibrary.AbstractControllers;
 using ControlsLibrary.AbstractControllers.TabView.Logic;
 using System.Drawing;
+using System.Windows.Forms.VisualStyles;
 using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
 using ControlsLibrary.Factories.Concrete.WinForms;
 using ControlsLibrary.Factories.Concrete.WinForms.WinHelp;
+using ControlsLibrary.View;
+using Orientation = ControlsLibrary.Containers.Orientation;
 
 namespace ControlsLibrary.Factories.Concrete
 {
@@ -26,7 +29,7 @@ namespace ControlsLibrary.Factories.Concrete
         public Func<Panel> CreateDefaultTabPanel { get; set; }
         public Func<TableLayoutPanel> CreateDefaultSplitPanel { get; set; }
         public Func<Panel> CreateDefaultTabsPanel { get; set; }
-
+        public Func<Form> CreateDefaultTabWindow { get; set; }
         #endregion
 
 
@@ -79,18 +82,6 @@ namespace ControlsLibrary.Factories.Concrete
             return CreateTabContent(CreateDefaultTabContent());
         }
 
-        //public void SetPanelProperty(IPanel panel, Point location, int width, int height)
-        //{
-        //    panel.Location = location;
-        //    panel.Width = width;
-        //    panel.Height = height;
-        //}
-
-        //public ISetarator CreateSeparator()
-        //{
-        //    IControl separator = CopyControl(DefaultSeparator);
-        //    return new SeparatorLogic(separator, DefaultSplitPanel.Height, DefaultSep);
-        //}
 
         public IControl CreateControl(object obj)
         {
@@ -116,7 +107,7 @@ namespace ControlsLibrary.Factories.Concrete
         {
             if (panel is ITabCollection) return (ITabCollection) panel;
             IPanel pnl = CreatePanel((Panel) panel);
-            var tabCollection = new TabCollectionLogic(pnl);
+            var tabCollection = new TabCollectionLogic(pnl, this);
 
             Panel control = (Panel) tabCollection.Control;
 
@@ -132,7 +123,7 @@ namespace ControlsLibrary.Factories.Concrete
             ITabPanel tabPanel = CreateTabPanel(CreateDefaultTabPanel());
             Panel panel = (Panel) tabPanel.Control;
             panel.MouseDown += tabPanel.OnMouseClick;
-            panel.MouseCaptureChanged += tabPanel.OnMouseCaptureChanged;
+            panel.MouseUp += (sender, e) => tabPanel.OnMouseUp(sender, new TabDropEventArgs(null, e.Location, Control.MousePosition));
             //tabPanel.MovingStart = () => panel.GetGodfather().MouseMove += tabPanel.OnMouseMove;
             //tabPanel.MovingStop = () => panel.GetGodfather().MouseMove -= tabPanel.OnMouseMove;
             return tabPanel;
@@ -141,12 +132,6 @@ namespace ControlsLibrary.Factories.Concrete
         public ITabPanel CreateTabPanel(object panel)
         {
             return panel is ITabPanel tabPanel ? tabPanel : new TabPanel((Panel)panel, this);
-        }
-        public ITabPanel CreateTabPanel(ITabContent tabContent)
-        {
-            ITabPanel panel = CreateTabPanel(CreateDefaultTabPanel());
-            panel.Name = tabContent.Name;
-            return panel;
         }
 
         public IBufferedCollection CreateBufferedCollection()
@@ -184,20 +169,28 @@ namespace ControlsLibrary.Factories.Concrete
             }
         }
 
-        //public ISetarator CreateSeparator(int height, double defaultSep)
-        //{
-        //    IControl separator = new SimpleControl(CreateDefaultDefaultSeparator);
-        //    return new SeparatorLogic(separator, height, defaultSep);
-        //}
-
-        public ITabView CreateTabView()
+        public ITabWindow CreateWindow(ITabView parent, ITabPanel tab)
         {
-            ITabView tabView = new TabViewLogic(this);
-            Panel panel = (Panel) tabView.Control;
-            //panel.LocationChanged += (sender, arg) =>
-            //    tabView.OnControlLocationChanged(Point.Empty, panel.Location);
-            //panel.SizeChanged += (sender, arg) => tabView.OnControlSizeChanged(Size.Empty, panel.Size);
-            return tabView;
+            Form window = CreateDefaultTabWindow();
+            TabView tabView = new TabView(tab);
+
+            tabView.BubblingFromParent();
+            ControlExtensions.BindingConcreteEvents(window, tabView);
+
+            tabView.TabViewModel.Orientation = parent.Orientation;
+            ITabView container = tabView.TabViewModel;
+            return new TabWindow(window, parent, container);
+        }
+        public ITabWindow CreateWindow(TabView tabView)
+        {
+            Form window = CreateDefaultTabWindow();
+
+            tabView.BubblingFromParent();
+            ControlExtensions.BindingConcreteEvents(window, tabView);
+
+            tabView.TabViewModel.Orientation = Orientation.Vertical;
+            ITabView container = tabView.TabViewModel;
+            return new TabWindow(window, null, container);
         }
     }
 }

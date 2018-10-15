@@ -107,7 +107,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
         }
         public void RemoveAt(int index)
         {
-            Controls.RemoveAt(index);
+            //Controls.RemoveAt(index);
             Collection.RemoveAt(index);
         }
         public IControl this[int index]

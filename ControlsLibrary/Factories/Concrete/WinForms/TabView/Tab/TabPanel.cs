@@ -108,7 +108,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
         }
 
         private event TabSelectedEventHandler TabSelected;
-        private event TabEventHandler TabDrop;
+        private event TabDropEventHandler TabDrop;
         private event TabEventHandler Disposing;
 
         event TabEventHandler ITabPanel.Disposing
@@ -117,7 +117,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
             remove { this.Disposing -= value; }
         }
 
-        event TabEventHandler ITabPanel.TabDrop
+        event TabDropEventHandler ITabPanel.TabDrop
         {
             add { this.TabDrop += value; }
             remove { this.TabDrop -= value; }
@@ -134,10 +134,10 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.TabView.Tab
             }
         }
 
-        public void OnMouseCaptureChanged(object sender, EventArgs e)
+        public void OnMouseUp(object sender, TabDropEventArgs e)
         {
             if (IsClicked) IsClicked = false;
-            if (IsSelected) TabDrop.Invoke(this, new TabEventArgs(this));
+            if (IsSelected) TabDrop.Invoke(this, new TabDropEventArgs(this, e.MousePoint, e.MouseAbsolutePoint));
         }
 
         private static SynchronizationContext _context = SynchronizationContext.Current;

@@ -23,7 +23,6 @@ namespace ControlsLibrary
 
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
-            GC.Collect();
         }
 
         private void OnMouseMove2(object sender, MouseEventArgs e)
@@ -40,6 +39,7 @@ namespace ControlsLibrary
 
         private void OnTabCollectionMouseMove(object sender, MouseEventArgs e)
         {
+            GC.Collect();
         }
 
         private void OnTabViewMouseMove(object sender, MouseEventArgs e)

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ControlsLibrary.Factories.Concrete;
+using ControlsLibrary.View;
 
 namespace ControlsLibrary
 {
@@ -16,7 +18,12 @@ namespace ControlsLibrary
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            TabView tabView = new TabView();
+            WinFactory factory = tabView.Factory;
+            Form window = (Form)factory.CreateWindow(tabView).Control;
+
+            Application.Run(window);
         }
     }
 }

@@ -24,9 +24,10 @@ namespace ControlsLibrary.AbstractControllers.TabView
         event TabEventHandler TabDisposing;
         #endregion
 
+        ITabView Parent { get; set; }
         void OnMouseMove(object sender, MouseEventArgs args);
         void OnSizeChanged(object sender, SizeChangedHandlerArgs args);
-        void OnTabDrop(object sender, TabEventArgs args);
+        void OnTabDrop(object sender, TabDropEventArgs args);
         void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs);
         void OnTabDisposing(object sender, TabEventArgs arg);
     }

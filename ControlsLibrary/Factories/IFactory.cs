@@ -11,19 +11,18 @@ namespace ControlsLibrary.Factories
     {
         ITabContent CreateTabContent(object content);
         ITabContent CreateTabContent();
-        //void SetPanelProperty(IPanel panel, Point location, int width, int height);
         ITabCollection CreateTabCollection();
         IControl CreateControl(object obj);
         IPanel CreatePanel(object obj);
         ITabCollection CreateTabCollection(object panel);
         ITabPanel CreateTabPanel();
         ITabPanel CreateTabPanel(object panel);
-        ITabPanel CreateTabPanel(ITabContent tabContent);
         IBufferedCollection CreateBufferedCollection(object panel);
         IBufferedCollection CreateBufferedCollection();
         ISplitContainer CreateSplitContainer(object splitContainer);
         ISplitContainer CreateSplitContainer(bool copy = true);
         IEnumerable<IControl> CreateControls(IEnumerable controls);
-        ITabView CreateTabView();
+        ITabWindow CreateWindow(ITabView parent, ITabPanel tab);
+
     }
 }

@@ -17,10 +17,10 @@ namespace ControlsLibrary.AbstractControllers.TabView.Tab
         event TabEventHandler TabDeleted;
         event TabMoveHandler TabMoved;
         event TabSelectedEventHandler TabSelected;
-        event TabEventHandler TabDrop;
+        event TabDropEventHandler TabDrop;
         event TabEventHandler Disposing;
         void OnMouseClick(object sender, MouseEventArgs e);
-        void OnMouseCaptureChanged(object sender, EventArgs e);
+        void OnMouseUp(object sender, TabDropEventArgs e);
         void ChangeLocation(Point point);
         Func<Point, Task> MoveAnimation { set; }
         bool IsClicked { get; set; }

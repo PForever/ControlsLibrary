@@ -13,7 +13,6 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
     internal abstract partial class TabCollectionBase : ITabCollection
     {
         public virtual int MaxTabLen { get; }
-
         public abstract ITabPanel SelectedTab { get; set; }
         public abstract int Indent { get; set; }
         public abstract int CurrentTabLen { get; set; }
@@ -30,11 +29,11 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         protected abstract void SwitchCollectionPositions(int oldIndex, int index);
         protected abstract int CalcIndexFromPosition(double position);
         public abstract void OnTabSelected(object sender, TabEventArgs args);
-
+        public virtual ITabView Parent { get; set; }
         public abstract void OnMouseMove(object sender, MouseEventArgs args);
         public abstract void OnSizeChanged(object sender, SizeChangedHandlerArgs args);
         protected abstract void CalcNewPosition(int argsX, int argsY, ITabPanel tab);
-        public abstract void OnTabDrop(object sender, TabEventArgs args);
+        public abstract void OnTabDrop(object sender, TabDropEventArgs args);
         public abstract void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs);
         public abstract void OnTabDisposing(object sender, TabEventArgs arg);
         protected abstract bool RectangleContains(Point tabPanelLocation, int delta);

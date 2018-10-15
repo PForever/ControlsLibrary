@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using ControlsLibrary.AbstractControllers.TabView.Tab;
 using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
+using ControlsLibrary.Factories;
 using Orientation = ControlsLibrary.Containers.Orientation;
 
 namespace ControlsLibrary.AbstractControllers.TabView.Logic
@@ -16,14 +17,15 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         //TODO ивент изменения размера
         private int TabsThreshold => StateManager.OnUpdateThreshold(Width, Height, MaxTabLen, Percent);
-
+        private readonly IFactory _factory;
         private const int LenConst = 50;
         private const float Percent = 0.8f;
 
         protected override IPanel TabsPanel { get; }
 
-        public TabCollectionLogic(IPanel tabsPanel)
+        public TabCollectionLogic(IPanel tabsPanel, IFactory factory)
         {
+            _factory = factory;
             TabsPanel = tabsPanel;
             CurrentTabLenChanged += OnCurrentTabLenChanged;
             InitializeComponent();
@@ -61,7 +63,6 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public override void OnTabDeleted(object sender, TabEventArgs args)
         {
-            TabUnbinding(args.TabPanel);
             int index = Controls.IndexOf(args.TabPanel);
             Controls.RemoveAt(index);
             Surfacing(index, Controls.Count - 1);
@@ -159,14 +160,15 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
             TryRender();
         }
 
-        public override void OnTabDrop(object sender, TabEventArgs args)
+        public override void OnTabDrop(object sender, TabDropEventArgs args)
         {
-            if (RectangleContains(args.TabPanel.Location, CurrentTabLen/2))
+            if (RectangleContains(args.MousePoint, CurrentTabLen/2))
             {
                 if (Contains(args.TabPanel))
                 {
                     Render(args.TabPanel);
                 }
+
                 else
                 {
                     double position = StateManager.GetPosition(args.TabPanel.Location);
@@ -174,6 +176,18 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                     Insert(index, args.TabPanel);
                 }
             }
+            else
+            {
+                CreateWindows(args.TabPanel, args.MouseAbsolutePoint);
+            }
+        }
+
+        private void CreateWindows(ITabPanel tab, Point location)
+        {
+            Remove(tab, false);
+            ITabWindow tabWindow = _factory.CreateWindow(Parent, tab);
+            tabWindow.Location = location;
+            tabWindow.Open();
         }
 
         public override void OnTabDisposing(object sender, TabEventArgs arg)
@@ -246,25 +260,38 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
         public override bool Remove(ITabPanel item)
         {
+            return Remove(item, true);
+        }
+        public bool Remove(ITabPanel item, bool disposing)
+        {
             if (!Controls.Contains(item)) return false;
             int index = Controls.IndexOf(item);
-            RemoveAt(index);
+            RemoveAt(index, disposing);
             return true;
         }
         public override void RemoveAt(int index)
         {
-            Controls.RemoveAt(index, dispose: true);
+            RemoveAt(index, true);
+        }
+
+        public void RemoveAt(int index, bool disposing)
+        {
+            ITabPanel tab = (ITabPanel) Controls[index];
+            Controls.RemoveAt(index, disposing);
+            TabUnbinding(tab);
             Surfacing(index, Controls.Count - 1);
             TryRender();
             if (Count > index)
             {
                 ((ITabPanel)Controls[index]).Select();
             }
-            else if(Count > 0)
+            else if (Count > 0)
             {
-                ((ITabPanel)Controls.Last()).Select();
+                ((ITabPanel) Controls.Last()).Select();
             }
+            else Add(_factory.CreateTabPanel());
         }
+
         public override void Clear()
         {
             CurrentTabLen = MaxTabLen;

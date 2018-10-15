@@ -23,7 +23,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
         public abstract IFactory Factory { get; }
 
         protected abstract ISplitContainer Container { get; }
-        protected abstract ITabCollection TabCollection { get; }
+        protected abstract ITabCollection TabCollection { get; set; }
         protected abstract IBufferedCollection BufferedCollection { get; }
 
         public virtual Point Location { get; set; }

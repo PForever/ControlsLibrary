@@ -12,6 +12,8 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
     {
         protected sealed class TabCollectionState
         {
+            private const int FixedPoint = 0;
+
             public Orientation Orientation { get; set; }
 
             public TabCollectionState(Orientation orientation)
@@ -56,11 +58,11 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
             private void SetStartLocationWidth(ITabPanel control, int distention)
             {
-                control.Location = new Point(distention, control.Location.Y);
+                control.Location = new Point(distention, FixedPoint);
             }
             private void SetStartLocationHeight(ITabPanel control, int distention)
             {
-                control.Location = new Point(control.Location.X, distention);
+                control.Location = new Point(FixedPoint, distention);
             }
 
             public void OnSetPosition(int index, ITabPanel item, int currentTabLent, int indent)
@@ -79,12 +81,12 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
 
             private void ChangeLocationWidth(ITabPanel control, int distention)
             {
-                Point point = new Point(distention, control.Location.Y);
+                Point point = new Point(distention, FixedPoint);
                 control.ChangeLocation(point);
             }
             private void ChangeLocationHeight(ITabPanel control, int distention)
             {
-                Point point = new Point(control.Location.X, distention);
+                Point point = new Point(FixedPoint, distention);
                 control.ChangeLocation(point);
             }
 
@@ -100,11 +102,11 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                 switch (Orientation)
                 {
                     case Orientation.Horizontal:
-                        point = new Point(curPosition, panel.Location.Y);
+                        point = new Point(curPosition, FixedPoint);
                         panel.ChangeLocation(point);
                         break;
                     case Orientation.Vertical:
-                        point = new Point(panel.Location.X, curPosition);
+                        point = new Point(FixedPoint, curPosition);
                         panel.ChangeLocation(point);
                         break;
                 }
@@ -131,7 +133,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                     case Orientation.Horizontal:
                         foreach (ITabPanel panel in controls.Cast<ITabPanel>())
                         {
-                            Point point = new Point(curPosition, panel.Location.Y);
+                            Point point = new Point(curPosition, FixedPoint);
                             panel.ChangeLocation(point);
                             curPosition += (panel.Width = currentTabLen) + intend;
                         }
@@ -140,7 +142,7 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                     case Orientation.Vertical:
                         foreach (ITabPanel panel in controls.Cast<ITabPanel>())
                         {
-                            Point point = new Point(panel.Location.X, curPosition);
+                            Point point = new Point(FixedPoint, curPosition);
                             panel.ChangeLocation(point);
                             curPosition += (panel.Height = currentTabLen) + intend;
                         }
@@ -152,10 +154,10 @@ namespace ControlsLibrary.AbstractControllers.TabView.Logic
                 switch (Orientation)
                 {
                     case Orientation.Horizontal:
-                        tab.Location = new Point(tab.Location.X + (argsX - tab.ClickPosition.X), tab.Location.Y); ;
+                        tab.Location = new Point(tab.Location.X + (argsX - tab.ClickPosition.X), FixedPoint); ;
                         break;
                     case Orientation.Vertical:
-                        tab.Location = new Point(tab.Location.X, tab.Location.Y + (argsY - tab.ClickPosition.Y));
+                        tab.Location = new Point(FixedPoint, tab.Location.Y + (argsY - tab.ClickPosition.Y));
                         break;
                 }
             }

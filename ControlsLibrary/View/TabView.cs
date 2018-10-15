@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using ControlsLibrary.AbstractControllers.TabView;
 using ControlsLibrary.AbstractControllers.TabView.Logic;
+using ControlsLibrary.AbstractControllers.TabView.Tab;
 using ControlsLibrary.Factories.Concrete;
 using Orientation = ControlsLibrary.Containers.Orientation;
 
@@ -10,11 +11,22 @@ namespace ControlsLibrary.View
 {
     public class TabView : TableLayoutPanel
     {
-
-        private ITabView _tabView;
+        public WinFactory Factory;
+        public ITabView TabViewModel { get; private set; }
         public TabView()
         {
+            CreateFactory();
             InitializeComponent();
+
+            TabViewModel = new TabViewLogic(Factory);
+            TabViewModel.Orientation = Orientation.Vertical;
+        }
+        public TabView(ITabPanel tab)
+        {
+            CreateFactory();
+            InitializeComponent();
+
+            TabViewModel = new TabViewLogic(Factory, tab);
         }
 
         protected void InitializeComponent()
@@ -27,8 +39,13 @@ namespace ControlsLibrary.View
 
             this.Dock = DockStyle.Fill;
             this.BackColor = Color.OrangeRed;
-
+            this.Name = "TabView";
             BorderStyle = BorderStyle.Fixed3D;
+        }
+
+        void CreateFactory()
+        {
+
             Panel TabContent()
             {
                 var page = new DefaultPage();
@@ -63,18 +80,27 @@ namespace ControlsLibrary.View
                     Color.Green,
                 BackgroundImageLayout = ImageLayout.Stretch
             };
-            this.Name = "TabView";
 
-            WinFactory factory = new WinFactory
+            Form TabWindow() => new TabForm();
+
+            //Form TabWindow() => new Form
+            //{
+            //    Name = "TabWindow",
+            //    Height = 300,
+            //    Width = 500,
+            //    StartPosition = FormStartPosition.Manual
+            //};
+
+
+            Factory = new WinFactory
             {
                 CreateDefaultTabContent = TabContent,
                 CreateDefaultTabPanel = TabPanel,
                 CreateDefaultTabsPanel = Panel,
                 DefaultSplitPanel = this,
-                CreateDefaultViewPanel = ViewPanel
+                CreateDefaultViewPanel = ViewPanel,
+                CreateDefaultTabWindow = TabWindow
             };
-            _tabView = new TabViewLogic(factory);
-            _tabView.Orientation = Orientation.Vertical;
         }
 
         private readonly Random _rnd = new Random();
