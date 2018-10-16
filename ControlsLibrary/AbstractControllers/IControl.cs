@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ControlsLibrary.AbstractControllers
 {
+    //TODO Описать абстрактный класс, впишнуть туда ивенты
     public interface IControl : IDisposable
     {
         object Control { get; }

@@ -15,7 +15,7 @@ namespace ControlsLibrary
         private StatusStrip statusStrip;
         private ToolStripStatusLabel statusLabel;
         private MenuStrip menuStrip1;
-        private ToolStripMenuItem файлToolStripMenuItem;
+        private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem editToolStripMenuItem;
         private ToolStripMenuItem tabsToolStripMenuItem;
         private ToolStripMenuItem newTabToolStripMenuItem;
@@ -54,7 +54,7 @@ namespace ControlsLibrary
             //}
         }
 
-        private void setButton()
+        private void SetButton()
         {
             _button = new Button();
             this._button.AutoEllipsis = true;
@@ -100,7 +100,7 @@ namespace ControlsLibrary
             this.closeSelectedTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colapsAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Content = new System.Windows.Forms.Panel();
@@ -142,7 +142,7 @@ namespace ControlsLibrary
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editToolStripMenuItem,
-            this.файлToolStripMenuItem,
+            this.fileToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
@@ -202,9 +202,9 @@ namespace ControlsLibrary
             // 
             // файлToolStripMenuItem
             // 
-            this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.файлToolStripMenuItem.Text = "&Edit";
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.fileToolStripMenuItem.Text = "&Edit";
             // 
             // toolsToolStripMenuItem
             // 
@@ -233,8 +233,8 @@ namespace ControlsLibrary
             this.ClientSize = new System.Drawing.Size(704, 394);
             this.Controls.Add(this.Content);
             this.Controls.Add(this.statusStrip);
-            this.Controls.Add(this.menuStrip1);
-            this.MainMenuStrip = this.menuStrip1;
+            //this.Controls.Add(this.menuStrip1);
+            //this.MainMenuStrip = this.menuStrip1;
             this.Name = "TabForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.statusStrip.ResumeLayout(false);

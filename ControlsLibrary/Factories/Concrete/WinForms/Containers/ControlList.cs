@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using ControlsLibrary.AbstractControllers;
+using ControlsLibrary.Containers;
 
 namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
 {
     public class ControlList : IControlList
     {
-        private WinFactory _factory;
+        private IFactory _factory;
         public Control.ControlCollection Controls;
         object IControlList.Controls { get => Controls; set => Controls = (Control.ControlCollection) value; }
 
@@ -19,11 +20,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
         {
         }
 
-        public ControlList(Control.ControlCollection controls) : this(controls, new WinFactory())
-        {
-        }
-
-        public ControlList(Control.ControlCollection controls, WinFactory factory)
+        public ControlList(Control.ControlCollection controls, IFactory factory)
         {
             _factory = factory;
             Controls = controls;
@@ -105,6 +102,13 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
             }
             else RemoveAt(index);
         }
+
+        public void AddRange(IEnumerable<IControl> controls)
+        {
+            Control[] winControls = controls.Select(c => (Control) c.Control).ToArray();
+            Controls.AddRange(winControls);
+        }
+
         public void RemoveAt(int index)
         {
             //Controls.RemoveAt(index);

@@ -2,8 +2,10 @@
 using System.Drawing;
 using System.Windows.Forms;
 using ControlsLibrary.AbstractControllers;
-using ControlsLibrary.AbstractControllers.TabView;
-using ControlsLibrary.AbstractControllers.TabView.Tab.Events;
+using ControlsLibrary.AbstractControllers.TabForms.TabView;
+using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab.Events;
+using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab.Events.Handlers;
+using ControlsLibrary.Containers;
 using ControlsLibrary.Factories.Concrete.WinForms.Containers;
 using Orientation = ControlsLibrary.Containers.Orientation;
 
@@ -14,9 +16,11 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
         private TableLayoutPanel _table;
         private int _relativePosition;
         private SplitContainerOrientationState _stateManager;
+        private IFactory _factory;
 
-        public TableSplitContainer(TableLayoutPanel table)
+        public TableSplitContainer(TableLayoutPanel table, IFactory factory)
         {
+            _factory = factory;
             _table = table;
             InitializeComponent();
         }
@@ -37,7 +41,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
         public int Height { get => _table.Height; set => _table.Height = value; }
         public void InitializeComponent()
         {
-            Controls = new ControlList(_table.Controls);
+            Controls = new ControlList(_table.Controls, _factory);
             _stateManager = new SplitContainerOrientationState(Orientation);
             _stateManager.OnInitializeComponent(_table, RelativePosition);
         }

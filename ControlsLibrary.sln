@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlsLibrary", "ControlsLibrary\ControlsLibrary.csproj", "{0BFB6C00-5A88-424D-8425-2B5A63527DA6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinViewStartPoint", "WinViewStartPoint\WinViewStartPoint.csproj", "{5EDAC61C-2BA0-4CF8-8168-C8E050212B84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{0BFB6C00-5A88-424D-8425-2B5A63527DA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BFB6C00-5A88-424D-8425-2B5A63527DA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0BFB6C00-5A88-424D-8425-2B5A63527DA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EDAC61C-2BA0-4CF8-8168-C8E050212B84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EDAC61C-2BA0-4CF8-8168-C8E050212B84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EDAC61C-2BA0-4CF8-8168-C8E050212B84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EDAC61C-2BA0-4CF8-8168-C8E050212B84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

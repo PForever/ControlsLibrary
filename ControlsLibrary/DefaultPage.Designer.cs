@@ -15,9 +15,9 @@ namespace ControlsLibrary
             Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
             Dock = DockStyle.Bottom;
             Width = 200;
-            Height = 50;
+            Height = 20;
             _browseBox = new SplitContainer { Name = "BrowseBox", Orientation = Orientation.Vertical, Dock = DockStyle.Fill};
-            _browseBox.SplitterDistance = 100;
+            _browseBox.SplitterDistance = 200;
             _browseButton = new Button{Name = "BrowseButton", Dock = DockStyle.Fill};
             _browseString = new TextBox{Name = "BrowseString", Dock = DockStyle.Fill, Multiline = true};
             _browseButton.Click += OnBrowseButtonClick;
@@ -27,7 +27,6 @@ namespace ControlsLibrary
         }
 
         private Image _image;
-
         private void OnBrowseButtonClick(object sender, System.EventArgs e)
         {
             var dialog = new OpenFileDialog();
