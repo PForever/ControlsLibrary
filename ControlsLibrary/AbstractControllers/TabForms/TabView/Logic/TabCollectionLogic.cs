@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab;
 using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab.Events;
 using ControlsLibrary.Factories;
+using ControlsLibrary.Factories.Concrete.WinForms.Controls.TabForm.TabView.Tab;
 using Orientation = ControlsLibrary.Containers.Orientation;
 
 namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
@@ -106,7 +107,6 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         public override void OnTabMoved(object sender, TabMovedEventArgs args)
         {
             double position = Orientation == Orientation.Vertical ? args.RequesLocation.Y : args.RequesLocation.X;
-
             int index = CalcIndexFromPosition(position);
             int oldIndex = Controls.IndexOf(args.TabPanel);
             if(index == oldIndex) return;
@@ -184,7 +184,7 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         private void CreateWindows(ITabPanel tab, Point location)
         {
             Remove(tab, false);
-            ITabWindow tabWindow = _factory.CreateWindow(Parent, tab);
+            ITabWindow tabWindow = _factory.CreateWindow(Owner.Owner, tab);
             tabWindow.Location = location;
             tabWindow.Open();
         }
@@ -249,8 +249,10 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
             item.TabDeleted -= OnTabDeleted;
             item.TabMoved -= OnTabMoved;
             item.TabDrop -= OnTabDrop;
+            item.Disposing -= OnTabDisposing;
         }
 
+        //TODO ADDRANGE
         public override void Add(ITabPanel item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
@@ -261,7 +263,7 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         {
             return Remove(item, true);
         }
-        public bool Remove(ITabPanel item, bool disposing)
+        public override bool Remove(ITabPanel item, bool disposing)
         {
             if (!Controls.Contains(item)) return false;
             int index = Controls.IndexOf(item);
@@ -294,8 +296,14 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         public override void Clear()
         {
             CurrentTabLen = MaxTabLen;
-            foreach (ITabPanel tabPanel in Controls)
-                tabPanel.Dispose();
+            ITabPanel[] list = new ITabPanel[Count];
+            Controls.CopyTo(list, 0);
+            foreach (ITabPanel panel in list)
+            {
+                Remove(panel, false);
+            }
+            //foreach (ITabPanel tabPanel in Controls)
+            //    tabPanel.Dispose();
             Controls.Clear();
         }
 

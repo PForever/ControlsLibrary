@@ -10,7 +10,7 @@ namespace ControlsLibrary.AbstractControllers
         object Control { get; }
 
         void Add(IStripMenuItem item);
-        void AddRange(IEnumerable<IStripMenuItem> items);
+        void Add(params IStripMenuItem[] items);
         void Remove(IStripMenuItem item);
         void RemoveAt(int index);
     }

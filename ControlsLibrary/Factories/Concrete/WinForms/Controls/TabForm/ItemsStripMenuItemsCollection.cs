@@ -26,7 +26,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls.TabForm
             Owner.DropDownItems.Add((ToolStripItem)item.Control);
         }
 
-        public void AddRange(IEnumerable<IStripMenuItem> items)
+        public void Add(params IStripMenuItem[] items)
         {
             foreach (IStripMenuItem item in items)
             {
@@ -36,7 +36,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls.TabForm
 
         public void Remove(IStripMenuItem item)
         {
-            _items.Remove(item.Text);
+            _items.Remove(item.Name);
             Owner.DropDownItems.Remove((ToolStripItem)item.Control);
         }
 

@@ -51,7 +51,7 @@
     <Compile Include="AbstractControllers\TabForms\TabView\IBufferedCollection.cs" />
     <Compile Include="AbstractControllers\TabForms\TabView\ITabCollection.cs" />
     <Compile Include="AbstractControllers\TabForms\TabView\ITabView.cs" />
-    <Compile Include="AbstractControllers\TabForms\IWindow.cs" />
+    <Compile Include="AbstractControllers\TabForms\ITabWindow.cs" />
     <Compile Include="AbstractControllers\TabForms\TabView\Logic\BufferedPage.cs" />
     <Compile Include="AbstractControllers\TabForms\TabView\Tab\Events\LocationChangedHandlerArgs.cs" />
     <Compile Include="AbstractControllers\TabForms\TabView\Tab\Events\PropertyChangedEventArgs.cs" />

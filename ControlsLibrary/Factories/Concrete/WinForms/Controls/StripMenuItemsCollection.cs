@@ -23,11 +23,10 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls
 
         public void Add(IStripMenuItem item)
         {
-            _items.Add(item.Text, item);
+            _items.Add(item.Name, item);
             Owner.Items.Add((ToolStripItem)item.Control);
         }
-
-        public void AddRange(IEnumerable<IStripMenuItem> items)
+        public void Add(params IStripMenuItem[] items)
         {
             foreach (IStripMenuItem item in items)
             {
@@ -37,7 +36,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls
 
         public void Remove(IStripMenuItem item)
         {
-            _items.Remove(item.Text);
+            _items.Remove(item.Name);
             Owner.Items.Remove((ToolStripItem)item.Control);
         }
 

@@ -19,11 +19,13 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
 
         public abstract IControlList Controls { get; set; }
         public abstract Orientation Orientation { get; set; }
+        public abstract void Join(ITabView tabView);
         public abstract void Show(ITabContent tabContent = null);
         public abstract IFactory Factory { get; }
+        public abstract ITabWindow Owner { get; set; }
 
         protected abstract ISplitContainer Container { get; }
-        protected abstract ITabCollection TabCollection { get; set; }
+        public abstract ITabCollection TabCollection { get; protected set; }
         protected abstract IBufferedCollection BufferedCollection { get; }
 
         public virtual Point Location { get; set; }

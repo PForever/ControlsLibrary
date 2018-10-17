@@ -47,7 +47,31 @@ namespace ControlsLibrary.Factories.Concrete
                     throw new ArgumentException();
             }
         }
+
         #endregion
+
+        #region Custom
+        public Func<IStripMenu, IStripMenu> CustomStripMenu { get; set; }
+        public Func<IStripMenuItem, IStripMenuItem> CustomStripMenuTool { get; set; }
+        public Func<ISplitContainer, ISplitContainer> CustomSplitPanel { get; set; }
+        public Func<ITabContent, ITabContent> CustomTabContent { get; set; }
+        public Func<IBufferedCollection, IBufferedCollection> CustomViewPanel { get; set; }
+        public Func<ITabPanel, ITabPanel> CustomTabPanel { get; set; }
+        public Func<ITabCollection, ITabCollection> CustomTabsPanel { get; set; }
+        public Func<ITabWindow, ITabWindow> CustomTabWindow { get; set; }
+        #endregion
+
+        public WinFactory()
+        {
+            CustomStripMenu = v => v;
+            CustomStripMenuTool = v => v;
+            CustomSplitPanel = v => v;
+            CustomTabContent = v => v;
+            CustomViewPanel = v => v;
+            CustomTabPanel = v => v;
+            CustomTabsPanel = v => v;
+            CustomTabWindow = v => v;
+        }
 
         public IControl CreateControl(object control)
         {
@@ -65,7 +89,7 @@ namespace ControlsLibrary.Factories.Concrete
 
         public ITabContent CreateTabContent()
         {
-            return CreateTabContent(CreateDefaultTabContent());
+            return CustomTabContent(CreateTabContent(CreateDefaultTabContent()));
         }
 
         public ITabContent CreateTabContent(object panel)
@@ -80,7 +104,7 @@ namespace ControlsLibrary.Factories.Concrete
         {
             ITabCollection tabCollection = CreateTabCollection(CreateDefaultTabsPanel());
             ((Panel)tabCollection.Control).Dock = DockStyle.Fill;
-            return tabCollection;
+            return CustomTabsPanel(tabCollection);
         }
 
         public ITabCollection CreateTabCollection(object panel)
@@ -104,7 +128,7 @@ namespace ControlsLibrary.Factories.Concrete
             Panel panel = (Panel) tabPanel.Control;
             panel.MouseDown += tabPanel.OnMouseClick;
             panel.MouseUp += (sender, e) => tabPanel.OnMouseUp(sender, new TabDropEventArgs(null, e.Location, Control.MousePosition));
-            return tabPanel;
+            return CustomTabPanel(tabPanel);
         }
 
         public ITabPanel CreateTabPanel(object panel)
@@ -117,7 +141,7 @@ namespace ControlsLibrary.Factories.Concrete
         public IBufferedCollection CreateBufferedCollection()
         {
             IBufferedCollection viewPanel = CreateBufferedCollection(CreateDefaultViewPanel());
-            return viewPanel;
+            return CustomViewPanel(viewPanel);
         }
         public IBufferedCollection CreateBufferedCollection(object panel)
         {
@@ -130,7 +154,7 @@ namespace ControlsLibrary.Factories.Concrete
 
         public ISplitContainer CreateSplitContainer()
         {
-            return CreateSplitContainer(CreateDefaultSplitPanel());
+            return CustomSplitPanel(CreateSplitContainer(CreateDefaultSplitPanel()));
         }
         public ISplitContainer CreateSplitContainer(object splitContainer)
         {
@@ -145,7 +169,7 @@ namespace ControlsLibrary.Factories.Concrete
 
         public IStripMenu CreateStripMenu()
         {
-            return CreateStripMenu(CreateDefaultStripMenu());
+            return CustomStripMenu(CreateStripMenu(CreateDefaultStripMenu()));
         }
 
         public IStripMenu CreateStripMenu(object menu)
@@ -156,11 +180,16 @@ namespace ControlsLibrary.Factories.Concrete
 
 
 
-        public IStripMenuItem CreateStripMenuTool()
+        public IStripMenuItem CreateStripMenuItem(string name, string text = null, Keys shortcutKeys = Keys.None, EventHandler handler = null)
         {
-            return CreateStripMenuTool(CreateDefaultStripMenuTool());
+            ToolStripMenuItem item = CreateDefaultStripMenuTool();
+            item.Name = name;
+            item.Text = string.IsNullOrEmpty(text) ? name : text;
+            item.ShortcutKeys = shortcutKeys;
+            item.Click += handler;
+            return CustomStripMenuTool(CreateStripMenuItem(item));
         }
-        public IStripMenuItem CreateStripMenuTool(object tool)
+        public IStripMenuItem CreateStripMenuItem(object tool)
         {
             ToolStripMenuItem toolStripItem = TypeCheck<ToolStripMenuItem>(tool);
             return new StripMenuItem(toolStripItem, this);
@@ -180,33 +209,53 @@ namespace ControlsLibrary.Factories.Concrete
             var result = new Dictionary<string, IStripMenuItem>();
             foreach (object control in controls)
             {
-                IStripMenuItem item = CreateStripMenuTool(control);
-                result.Add(item.Text, item);
+                IStripMenuItem item = CreateStripMenuItem(control);
+                result.Add(item.Name, item);
             }
             return result;
         }
 
-        public ITabWindow CreateWindow(ITabView parent, ITabPanel tab)
+
+        public void SwitchWindow(IBufferedCollection newParent, ITabPanel tab)
         {
+            ((Control)tab.Control).ForgetAll();
+            ((Control)tab.TabContent.Control).ForgetAll();
+            Panel panel = (Panel)tab.Control;
+            panel.MouseDown += tab.OnMouseClick;
+            panel.MouseUp += (sender, e) => tab.OnMouseUp(sender, new TabDropEventArgs(null, e.Location, Control.MousePosition));
+
+            ((Panel)newParent.Control).Controls.Add((Control)tab.TabContent.Control);
+            //((Control) newParent.Container.TabCollection.Control).Controls.Add();
+            //((Control)tab.TabContent.Control).BindingConcreteEvents((Control) newParent.Container.TabCollection.Control);
+        }
+
+        public ITabWindow CreateWindow(ITabWindow parent, ITabPanel tab)
+        {
+            ((Control)tab.Control).ForgetAll();
+            ((Control)tab.TabContent.Control).ForgetAll();
+            Panel panel = (Panel)tab.Control;
+            panel.MouseDown += tab.OnMouseClick;
+            panel.MouseUp += (sender, e) => tab.OnMouseUp(sender, new TabDropEventArgs(null, e.Location, Control.MousePosition));
+
             Form window = CreateDefaultTabWindow();
             ITabView tabView = new TabViewLogic(tab, this);
 
-            Control control = (Control)(tabView.Control);
-            ((Control)(tabView.Control)).BubblingFromParent();
-            ControlExtensions.BindingConcreteEvents(window, control);
+            //window.BubblingFromParent();
 
-            tabView.Orientation = parent.Orientation;
-            return new TabWindow(window, parent, tabView);
+            tabView.Orientation = parent.Container.Orientation;
+            var result = CustomTabWindow(new TabWindow(window, parent, tabView, this));
+            //((Control)tab.Control).Parent.Parent.Parent.BindingConcreteEvents(window);
+            window.BubblingFromParent();
+            return result;
         }
         public ITabWindow CreateWindow(ITabView tabView)
         {
             Form window = CreateDefaultTabWindow();
-            Control control = (Control) (tabView.Control);
-            control.BubblingFromParent();
-            ControlExtensions.BindingConcreteEvents(window, control);
+            window.BubblingFromParent();
 
             tabView.Orientation = Orientation.Vertical;
-            return new TabWindow(window, null, tabView);
+
+            return CustomTabWindow(new TabWindow(window, null, tabView, this));
         }
     }
 }

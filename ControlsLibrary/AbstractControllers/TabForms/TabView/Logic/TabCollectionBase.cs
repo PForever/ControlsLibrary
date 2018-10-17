@@ -30,13 +30,14 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         protected abstract void SwitchCollectionPositions(int oldIndex, int index);
         protected abstract int CalcIndexFromPosition(double position);
         public abstract void OnTabSelected(object sender, TabEventArgs args);
-        public virtual ITabView Parent { get; set; }
+        public virtual ITabView Owner { get; set; }
         public abstract void OnMouseMove(object sender, MouseEventArgs args);
         public abstract void OnSizeChanged(object sender, SizeChangedHandlerArgs args);
         protected abstract void CalcNewPosition(int argsX, int argsY, ITabPanel tab);
         public abstract void OnTabDrop(object sender, TabDropEventArgs args);
         public abstract void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs);
         public abstract void OnTabDisposing(object sender, TabEventArgs arg);
+        public abstract bool Remove(ITabPanel item, bool disposing);
         protected abstract bool RectangleContains(Point tabPanelLocation, int delta);
         protected abstract void InitializeComponent();
         public abstract void Insert(int index, ITabPanel item);

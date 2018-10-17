@@ -7,6 +7,7 @@ namespace ControlsLibrary.AbstractControllers
     public interface IStripMenuItem
     {
         object Control { get; }
+        string Name { get; set; }
         string Text { get; set; }
         Keys ShortcutKeys { get; set; }
         IStripMenuItemsCollection InnerTools { get; }

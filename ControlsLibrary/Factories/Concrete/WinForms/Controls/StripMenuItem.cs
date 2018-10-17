@@ -9,8 +9,24 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls
     public class StripMenuItem : IStripMenuItem
     {
         private readonly ToolStripMenuItem _stripItem;
-        public string Text { get => _stripItem.Text; set => _stripItem.Text = value;}
-        public Keys ShortcutKeys { get => _stripItem.ShortcutKeys; set => _stripItem.ShortcutKeys = value; }
+
+        public string Text
+        {
+            get => _stripItem.Text;
+            set => _stripItem.Text = value;
+        }
+
+        public Keys ShortcutKeys
+        {
+            get => _stripItem.ShortcutKeys;
+            set => _stripItem.ShortcutKeys = value;
+        }
+        public string Name
+        {
+            get => _stripItem.Name;
+            set => _stripItem.Name = value;
+        }
+
         public IStripMenuItemsCollection InnerTools { get; }
         public event EventHandler Clocked
         {
@@ -30,6 +46,5 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls
         }
 
         public object Control => _stripItem;
-
     }
 }

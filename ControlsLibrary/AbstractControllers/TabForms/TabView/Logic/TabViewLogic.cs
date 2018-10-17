@@ -27,12 +27,12 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
             TabCollection.Add(tab);
         }
 
-        protected override ITabCollection TabCollection
+        public override ITabCollection TabCollection
         {
-            set
+            protected set
             {
                 _tabCollection = value;
-                _tabCollection.Parent = this;
+                _tabCollection.Owner = this;
             }
             get => _tabCollection;
         }
@@ -57,6 +57,7 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         }
 
         public override IFactory Factory { get; }
+        public override ITabWindow Owner { get; set; }
 
 
         protected override void InitializeComponent()
@@ -93,6 +94,15 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         protected override void OnTabSelected(object sender, TabEventArgs args)
         {
             Show(args.TabPanel.TabContent);
+        }
+
+        public override void Join(ITabView tabView)
+        {
+            foreach (ITabPanel panel in tabView.TabCollection)
+            {
+                Factory.SwitchWindow(BufferedCollection, panel);
+                TabCollection.Add(panel);
+            }
         }
 
         public override void Show(ITabContent tabContent = null)
