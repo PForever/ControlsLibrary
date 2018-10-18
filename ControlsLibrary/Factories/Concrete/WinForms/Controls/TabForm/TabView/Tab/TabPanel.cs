@@ -9,6 +9,7 @@ using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab.Events;
 using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab.Events.Handlers;
 using ControlsLibrary.Containers;
 using ControlsLibrary.Factories.Concrete.WinForms.Containers;
+using ControlsLibrary.Factories.Concrete.WinForms.WinHelp;
 using Orientation = ControlsLibrary.Containers.Orientation;
 
 namespace ControlsLibrary.Factories.Concrete.WinForms.Controls.TabForm.TabView.Tab
@@ -91,11 +92,11 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls.TabForm.TabView.T
             set => _panel.Height = value;
         }
 
-        private event TabEventHandler TabDeleted;
-        event TabEventHandler ITabPanel.TabDeleted
+        private event TabDeletingEventHandler TabDeleting;
+        event TabDeletingEventHandler ITabPanel.TabDeleting
         {
-            add { this.TabDeleted += value; }
-            remove { this.TabDeleted -= value; }
+            add { this.TabDeleting += value; }
+            remove { this.TabDeleting -= value; }
         }
 
         private event TabMoveHandler TabMoved;
@@ -165,11 +166,11 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls.TabForm.TabView.T
             add { this.TabSelected += value; }
             remove { this.TabSelected -= value; }
         }
-
-        public void Delete()
+        //TODO убрать ремув
+        public void Delete(bool disposing)
         {
-            if (TabDeleted == null) throw new Exception("Content not found");
-            TabDeleted.Invoke(this, new TabEventArgs(this));
+            if (TabDeleting == null) throw new WtfException("Content not found");
+            TabDeleting.Invoke(this, new TabDeletingEventArgs(this, disposing));
         }
 
         public void InitializeComponent()

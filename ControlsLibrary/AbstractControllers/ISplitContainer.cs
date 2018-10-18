@@ -10,5 +10,7 @@ namespace ControlsLibrary.AbstractControllers
         int RelativePosition { get; set; }
         event TabEventHandler AddNewTab;
         event TabEventHandler RemoveSelectedTab;
+        void RemoveSelected();
+        void AddNew();
     }
 }

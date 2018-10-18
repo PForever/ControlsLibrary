@@ -14,7 +14,7 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         public abstract TimeSpan TimeOut { get; set; }
         public abstract int Capacity { get; set; }
         public abstract ITabContent Current { get; set; }
-        public abstract void Remove(ITabContent tabPanelTabContent);
+        public abstract void Remove(ITabContent tabPanelTabContent, bool disposing = true);
 
         public virtual string Name
         {
@@ -68,5 +68,6 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         {
             Dispose(true);
         }
+
     }
 }

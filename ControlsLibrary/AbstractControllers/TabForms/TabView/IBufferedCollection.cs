@@ -8,6 +8,6 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView
         TimeSpan TimeOut { get; set; }
         int Capacity { get; set; }
         ITabContent Current { get; set; }
-        void Remove(ITabContent tabPanelTabContent);
+        void Remove(ITabContent tabPanelTabContent, bool disposing = true);
     }
 }

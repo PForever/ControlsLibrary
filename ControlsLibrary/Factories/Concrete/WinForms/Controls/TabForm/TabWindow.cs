@@ -111,19 +111,20 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls.TabForm
         {
             //TODO Enable = false if Parent == null
             if(Parent == null) return;
-            Parent.Join(this);
+            ITabPanel[] panels = Container.TabCollection.ToArray();
             int count = Container.TabCollection.Count;
             for (int i = 0; i < count; i++)
             {
                 Container.TabCollection.Remove(Container.TabCollection.First(), false);
             }
+            Parent.Join(this, panels);
             //Container.TabCollection.Clear();
 
             while (Children.Count > 0)
             {
                 Children.First().Parent = Parent;
             }
-            //Close();
+            Close();
         }
 
         public void JoinChildren()
@@ -134,10 +135,10 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls.TabForm
             }
         }
 
-        public void Join(ITabWindow tabView)
+        public void Join(ITabWindow child, IEnumerable<ITabPanel> childsTabs)
         {
-            Container.Join(tabView.Container);
-            Children.Remove(tabView);
+            Container.Join(childsTabs);
+            Children.Remove(child);
         }
 
         public void Dispose()

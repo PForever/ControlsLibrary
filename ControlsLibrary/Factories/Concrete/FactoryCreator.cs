@@ -35,13 +35,13 @@ namespace ControlsLibrary.Factories.Concrete
                 BorderStyle = BorderStyle.FixedSingle,
                 Height = 30,
                 BackColor = Color.White
-            };
+            }.IncrementName();
             Panel ViewPanel() => new Panel
             {
                 Name = "ViewPanel",
                 BorderStyle = BorderStyle.FixedSingle,
                 BackColor = Color.Red
-            };
+            }.IncrementName();
             Panel TabPanel() => new Panel
             {
                 Name = "TabPanel",
@@ -50,7 +50,7 @@ namespace ControlsLibrary.Factories.Concrete
                 BackColor =
                     Color.Green,
                 BackgroundImageLayout = ImageLayout.Stretch
-            };
+            }.IncrementName();
 
             TableLayoutPanel TabViewPanel()
             {
@@ -60,13 +60,16 @@ namespace ControlsLibrary.Factories.Concrete
                     BackColor = Color.OrangeRed,
                     Name = "TabView",
                     BorderStyle = BorderStyle.Fixed3D
-                };
+                }.IncrementName();
             }
 
-            MenuStrip MenuStrip() => new MenuStrip();
+            MenuStrip MenuStrip() => new MenuStrip().IncrementName();
             ToolStripMenuItem ToolStripMenuItem() => new ToolStripMenuItem();
 
-            Form TabWindow() => new TabForm();
+            Form TabWindow()
+            {
+                return new TabForm().IncrementName();
+            }
 
             return new WinFactory
             {
@@ -79,6 +82,23 @@ namespace ControlsLibrary.Factories.Concrete
                 CreateDefaultStripMenu = MenuStrip,
                 CreateDefaultStripMenuTool = ToolStripMenuItem
             };
+        }
+    }
+    public static class DebugExtension
+    {
+        //private static int i;
+        public static T IncrementName<T>(this T control)
+            where T : Control
+        {
+            control.Name += /*control.Name ?? "" + */control.GetType().Name + Inc<T>.I;
+            return control;
+        }
+
+        private static class Inc<T>
+            where T : Control
+        {
+            private static int i;
+            public static int I => i++;
         }
     }
 }

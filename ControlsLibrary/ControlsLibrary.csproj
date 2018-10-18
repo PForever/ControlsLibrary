@@ -46,6 +46,8 @@
     <Compile Include="AbstractControllers\IControl.cs" />
     <Compile Include="AbstractControllers\IStripMenu.cs" />
     <Compile Include="AbstractControllers\IStripMenuTool.cs" />
+    <Compile Include="AbstractControllers\TabForms\TabView\Tab\Events\TabDeletingEventArgs.cs" />
+    <Compile Include="AbstractControllers\TabForms\TabView\Tab\Events\Handlers\TabDeletingEventHandler.cs" />
     <Compile Include="Containers\IControlList.cs" />
     <Compile Include="AbstractControllers\IPanel.cs" />
     <Compile Include="AbstractControllers\TabForms\TabView\IBufferedCollection.cs" />

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using ControlsLibrary.AbstractControllers;
+using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab;
 using ControlsLibrary.Containers;
 
 namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
@@ -61,13 +62,21 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
             Collection.CopyTo(array, arrayIndex);
         }
 
+        public bool Remove(IControl item, bool disposing)
+        {
+            //if(item == null) throw new ArgumentNullException();
+            //if (!Collection.Contains(item)) return false;
+            //if(disposing) Controls.Remove((Control) item.Control);
+            //Collection.Remove(item);
+            //return true;
+            int index = IndexOf(item);
+            if (index == -1) return false;
+            RemoveAt(index, disposing);
+            return true;
+        }
         public bool Remove(IControl item)
         {
-            if(item == null) throw new ArgumentNullException();
-            if (!Collection.Contains(item)) return false;
-            Controls.Remove((Control) item.Control);
-            Collection.Remove(item);
-            return true;
+            return Remove(item, true);
         }
 
         public int Count => Collection.Count;
@@ -81,23 +90,16 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
         public void Insert(int index, IControl item)
         {
             if(item == null) throw new ArgumentNullException();
-            Insert(index, (Control) item.Control);
+            Controls.Add((Control)item.Control);
             Collection.Insert(index, item);
         }
 
-        private void Insert(int index, Control control)
-        {
-            Controls.Add(control);
-            for (int i = Controls.Count - 1; i > index; i--)
-            {
-                Controls.SetChildIndex(Controls[i], i - 1);
-            }
-        }
         public void RemoveAt(int index, bool dispose)
         {
             if (dispose)
             {
-                Collection[index].Dispose();
+                Controls.Remove((Control)Collection[index].Control);
+                //Collection[index].Dispose();
                 Collection.RemoveAt(index);
             }
             else RemoveAt(index);
@@ -119,8 +121,8 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
             get => Collection[index];
             set
             {
-                Controls.RemoveAt(index);
-                Insert(index, (Control)value.Control);
+                Controls.Remove((Control)Collection[index].Control);
+                Controls.Add((Control)value.Control);
                 Collection[index] = value;
             }
         }
@@ -128,15 +130,6 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Containers
         public void Swap(int first, int second)
         {
             SwapCollection(first, second);
-            SwapControls(first, second);
-        }
-
-        private void SwapControls(int first, int second)
-        {
-            Control frstControl = Controls[first];
-            Control scndControl = Controls[second];
-            Controls.SetChildIndex(frstControl, second);
-            Controls.SetChildIndex(scndControl, first);
         }
 
         private void SwapCollection(int first, int second)

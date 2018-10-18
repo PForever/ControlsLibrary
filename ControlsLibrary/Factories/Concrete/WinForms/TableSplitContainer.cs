@@ -13,10 +13,10 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
 {
     public partial class TableSplitContainer : ISplitContainer
     {
-        private TableLayoutPanel _table;
+        private readonly TableLayoutPanel _table;
         private int _relativePosition;
         private SplitContainerOrientationState _stateManager;
-        private IFactory _factory;
+        private readonly IFactory _factory;
 
         public TableSplitContainer(TableLayoutPanel table, IFactory factory)
         {
@@ -48,18 +48,27 @@ namespace ControlsLibrary.Factories.Concrete.WinForms
 
         public void OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Control)
-            {
-                switch (e.KeyCode)
-                {
-                    case Keys.T:
-                        AddNewTab.Invoke(this, new TabEventArgs(null));
-                        break;
-                    case Keys.W:
-                        RemoveSelectedTab.Invoke(this, new TabEventArgs(null));
-                        break;
-                }
-            }
+            //if (e.Control)
+            //{
+            //    switch (e.KeyCode)
+            //    {
+            //        case Keys.T:
+            //            AddNewTab.Invoke(this, new TabEventArgs(null));
+            //            break;
+            //        case Keys.W:
+            //            RemoveSelectedTab.Invoke(this, new TabEventArgs(null));
+            //            break;
+            //    }
+            //}
+        }
+
+        public void RemoveSelected()
+        {
+            RemoveSelectedTab.Invoke(this, new TabEventArgs(null));
+        }
+        public void AddNew()
+        {
+            AddNewTab.Invoke(this, new TabEventArgs(null));
         }
 
         public IControlList Controls { get; set; }

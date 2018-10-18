@@ -2,9 +2,11 @@
 using System.Drawing;
 using System.Windows.Forms;
 using ControlsLibrary;
+using ControlsLibrary.AbstractControllers;
 using ControlsLibrary.AbstractControllers.TabForms;
 using ControlsLibrary.Factories;
 using ControlsLibrary.Factories.Concrete;
+using Orientation = ControlsLibrary.Containers.Orientation;
 
 namespace WinViewStartPoint
 {
@@ -37,23 +39,42 @@ namespace WinViewStartPoint
             ITabWindow CustomTabWindow(ITabWindow tabWindow)
             {
 
-                var menu = factory.CreateStripMenu();
+                IStripMenu menu = factory.CreateStripMenu();
 
-                var fileTool = factory.CreateStripMenuItem("File", "&File");
-                var windowTool = factory.CreateStripMenuItem("Window", "&Window");
+                IStripMenuItem fileTool = factory.CreateStripMenuItem("File", "&File");
+                IStripMenuItem windowTool = factory.CreateStripMenuItem("Window", "&Window");
 
+                void ChangeOrientation(object sender, EventArgs e)
+                {
+                    tabWindow.Container.Orientation = tabWindow.Container.Orientation == Orientation.Horizontal? Orientation.Vertical : Orientation.Horizontal;
+                }
+                IStripMenuItem changeOrientation = factory.CreateStripMenuItem("Change Orientation", "&Change Orientation", Keys.Control | Keys.Shift | Keys.O, ChangeOrientation);
                 void GoToParent(object sender, EventArgs e)
                 {
                     tabWindow.ComebackToParent();
                 }
-                var toParentItem = factory.CreateStripMenuItem("Go to parent", "&Go to parent", Keys.Control | Keys.Home, GoToParent);
+                IStripMenuItem toParentItem = factory.CreateStripMenuItem("Go to parent", "&Go to parent", Keys.Control | Keys.Home, GoToParent);
                 void JoinChildrenItem(object sender, EventArgs e)
                 {
                     tabWindow.JoinChildren();
                 }
-                var joinChildrenItem = factory.CreateStripMenuItem("Join children", "&Join children", Keys.Control | Keys.Shift | Keys.Home, JoinChildrenItem);
-                windowTool.InnerTools.Add(toParentItem, joinChildrenItem);
-                var tabsTool = factory.CreateStripMenuItem("Tabs", "&Tabs");
+                IStripMenuItem joinChildrenItem = factory.CreateStripMenuItem("Join children", "&Join children", Keys.Control | Keys.Shift | Keys.Home, JoinChildrenItem);
+                windowTool.InnerTools.Add(changeOrientation, toParentItem, joinChildrenItem);
+
+                IStripMenuItem tabsTool = factory.CreateStripMenuItem("Tabs", "&Tabs");
+                void TabAddItem(object sender, EventArgs e)
+                {
+                    tabWindow.Container.AddNew();
+                }
+                IStripMenuItem tabAddItem = factory.CreateStripMenuItem("Add tab", "&Add tab", Keys.Control | Keys.T, TabAddItem);
+
+                void TabRemoveItem(object sender, EventArgs e)
+                {
+                    tabWindow.Container.RemoveSelected();
+                }
+                IStripMenuItem tabRemoveItem = factory.CreateStripMenuItem("Remove tab", "&Remove tab", Keys.Control | Keys.W, TabRemoveItem);
+                tabsTool.InnerTools.Add(tabAddItem, tabRemoveItem);
+
                 menu.InnerTools.Add(fileTool, windowTool, tabsTool);
                 tabWindow.StripMenu = menu;
                 return tabWindow;

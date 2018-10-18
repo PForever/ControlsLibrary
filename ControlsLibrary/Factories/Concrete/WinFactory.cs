@@ -216,23 +216,25 @@ namespace ControlsLibrary.Factories.Concrete
         }
 
 
-        public void SwitchWindow(IBufferedCollection newParent, ITabPanel tab)
+        public void SwitchWindow(ITabPanel tab)
         {
-            ((Control)tab.Control).ForgetAll();
-            ((Control)tab.TabContent.Control).ForgetAll();
-            Panel panel = (Panel)tab.Control;
-            panel.MouseDown += tab.OnMouseClick;
-            panel.MouseUp += (sender, e) => tab.OnMouseUp(sender, new TabDropEventArgs(null, e.Location, Control.MousePosition));
+            ((Control)tab.Control).ForgetYourFather();
+            ((Control)tab.TabContent.Control).ForgetYourFather();
+            //((Control)tab.Control).ForgetAll();
+            //((Control)tab.TabContent.Control).ForgetAll();
+            //Panel panel = (Panel)tab.Control;
+            //panel.MouseDown += tab.OnMouseClick;
+            //panel.MouseUp += (sender, e) => tab.OnMouseUp(sender, new TabDropEventArgs(null, e.Location, Control.MousePosition));
 
-            ((Panel)newParent.Control).Controls.Add((Control)tab.TabContent.Control);
+            //((Panel)newParent.Control).Controls.Add((Control)tab.TabContent.Control);
             //((Control) newParent.Container.TabCollection.Control).Controls.Add();
             //((Control)tab.TabContent.Control).BindingConcreteEvents((Control) newParent.Container.TabCollection.Control);
         }
 
         public ITabWindow CreateWindow(ITabWindow parent, ITabPanel tab)
         {
-            ((Control)tab.Control).ForgetAll();
-            ((Control)tab.TabContent.Control).ForgetAll();
+            //((Control)tab.Control).ForgetAll();
+            //((Control)tab.TabContent.Control).ForgetAll();
             Panel panel = (Panel)tab.Control;
             panel.MouseDown += tab.OnMouseClick;
             panel.MouseUp += (sender, e) => tab.OnMouseUp(sender, new TabDropEventArgs(null, e.Location, Control.MousePosition));

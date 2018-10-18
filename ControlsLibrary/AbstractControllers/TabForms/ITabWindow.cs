@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ControlsLibrary.AbstractControllers.TabForms.TabView;
+using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab;
 
 namespace ControlsLibrary.AbstractControllers.TabForms
 {
@@ -13,6 +14,6 @@ namespace ControlsLibrary.AbstractControllers.TabForms
         void Close();
         void ComebackToParent();
         void JoinChildren();
-        void Join(ITabWindow tabView);
+        void Join(ITabWindow child, IEnumerable<ITabPanel> childsTabs);
     }
 }

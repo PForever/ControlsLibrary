@@ -76,12 +76,12 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
 
             foreach (EventInfo eventInfo in t.GetEvents(BindingFlags.Public | BindingFlags.Instance))
             {
-                if(eventInfo.Name == "Disposed") continue;
+                if(eventInfo.Name == "Disposed" || eventInfo.Name == "EventControlAdded") continue;
                 FieldInfo fieldInfo = t.GetField("Event" + eventInfo.Name, BindingFlags.NonPublic | BindingFlags.Static)
                                    ?? t.GetField("Event" + _suffixReg.Replace(eventInfo.Name, ""), BindingFlags.NonPublic | BindingFlags.Static); //winforms ♥
                 object field = fieldInfo.GetValue(null);
 
-                HandlerRouter router = new HandlerRouter(field, dstEvents, dst.Name, src.Name, eventInfo.Name);
+                HandlerRouter router = new HandlerRouter(field, dstEvents, dst, src, eventInfo.Name);
                 MethodInfo handlerInfo = router.GetType().GetMethod("Invoke", new Type[] { typeof(object), typeof(EventArgs) });
                 Delegate deleg = Delegate.CreateDelegate(eventInfo.EventHandlerType, router, handlerInfo, true);
                 //надо создать делегат задано сигнатуры
@@ -90,6 +90,19 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
                 //eventInfo.AddEventHandler(src, deleg);
             }
         }
+
+        public static bool HasHandler(this Control src, string eventName)
+        {
+            if (src == null) throw new ArgumentNullException(nameof(src));
+            Type t = typeof(Control);
+            EventHandlerList srcEvents = (EventHandlerList)t.GetProperty("Events", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(src);
+            EventInfo eventInfo = t.GetEvent(eventName);
+            FieldInfo fieldInfo = t.GetField("Event" + eventInfo.Name, BindingFlags.NonPublic | BindingFlags.Static)
+                                                        ?? t.GetField("Event" + _suffixReg.Replace(eventInfo.Name, ""), BindingFlags.NonPublic | BindingFlags.Static);
+            object field = fieldInfo.GetValue(null);
+            return (src.Parent != null && (srcEvents[field]?.GetInvocationList().Any(d => (d.Target as HandlerRouter)?.Destination == src.Parent) ?? false));
+        }
+
         public static void BindingConcreteEvents(this Control src, Control dst)
         {
             if (src == null) throw new ArgumentNullException(nameof(src));
@@ -109,10 +122,9 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
                                    ?? t.GetField("Event" + _suffixReg.Replace(eventInfo.Name, ""), BindingFlags.NonPublic | BindingFlags.Static);
 
 
-
                 object field = fieldInfo.GetValue(null);
-
-                HandlerRouter router = new HandlerRouter(field, dstEvents, dst.Name, src.Name, eventInfo.Name);
+                if(src.Parent != null && (srcEvents[field]?.GetInvocationList().Any(d => (d.Target as HandlerRouter)?.Destination == src.Parent) ?? false)) return;
+                HandlerRouter router = new HandlerRouter(field, dstEvents, dst, src, eventInfo.Name);
                 MethodInfo handlerInfo = router.GetType().GetMethod("Invoke", new Type[] { typeof(object), typeof(EventArgs) });
                 Delegate deleg = Delegate.CreateDelegate(eventInfo.EventHandlerType, router, handlerInfo, true);
                 srcEvents.AddHandler(field, deleg);
@@ -138,10 +150,13 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
 
                 object field = fieldInfo.GetValue(null);
                 Delegate deleg = srcEvents[field];
+                if(deleg == null) return;
                 foreach (Delegate handler in deleg.GetInvocationList())
                 {
+                    if((handler.Target as HandlerRouter)?.Destination == dst)
                     srcEvents.RemoveHandler(field, handler);
                 }
+                if((deleg.Target as HandlerRouter)?.Destination == dst)
                 srcEvents.RemoveHandler(field, deleg);
             }
         }
@@ -155,16 +170,16 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
         {
             private readonly object _key;
             private readonly EventHandlerList _eventHandlerList;
-            public string DestinationName { get; }
-            public string SourceName { get; }
+            public Control Destination { get; }
+            public Control Source { get; }
             public string EventName { get; }
 
-            public HandlerRouter(object key, EventHandlerList eventHandlerList, string destinationName, string sourceName, string eventName)
+            public HandlerRouter(object key, EventHandlerList eventHandlerList, Control destination, Control source, string eventName)
             {
                 _key = key;
                 _eventHandlerList = eventHandlerList;
-                DestinationName = destinationName;
-                SourceName = sourceName;
+                Destination = destination;
+                Source = source;
                 EventName = eventName;
             }
 
@@ -198,10 +213,10 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
             UnbubblingFromParent(control, UnbindingConcreteEvents);
         }
 
-        public static void TunnelingFromParent(this Control control)
-        {
-            TunnelingFromParent(control, BindingConcreteEvents);
-        }
+        //public static void TunnelingFromParent(this Control control)
+        //{
+        //    TunnelingFromParent(control, BindingConcreteEvents);
+        //}
 
         public static void UnbubblingFromParent(this Control parent, Action<Control, Control> bindingEvents)
         {
@@ -214,7 +229,7 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
         }
         public static void BubblingFromParent(this Control parent, Action<Control, Control> bindingEvents)
         {
-            parent.ControlAdded += ParentOnControlAdded;
+            if(!parent.HasHandler(nameof(parent.ControlAdded))) parent.ControlAdded += ParentOnControlAdded;
 
             if (parent.Controls.Count == 0) return;
             foreach (Control child in parent.Controls)
@@ -226,19 +241,21 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
 
         private static void ParentOnControlAdded(object sender, ControlEventArgs args)
         {
+
             if(!(sender is Control parent)) throw new WtfException();
+            args.Control.ForgetYourFather();
             BindingConcreteEvents(args.Control, parent);
             args.Control.BubblingFromParent();
         }
 
-        public static void TunnelingFromParent(this Control parent, Action<Control, Control> bindingEvents)
-        {
-            if (parent.Controls.Count == 0) return;
-            foreach (Control child in parent.Controls)
-            {
-                bindingEvents(parent, child);
-                child.TunnelingFromParent(bindingEvents);
-            }
-        }
+        //public static void TunnelingFromParent(this Control parent, Action<Control, Control> bindingEvents)
+        //{
+        //    if (parent.Controls.Count == 0) return;
+        //    foreach (Control child in parent.Controls)
+        //    {
+        //        bindingEvents(parent, child);
+        //        child.TunnelingFromParent(bindingEvents);
+        //    }
+        //}
     }
 }

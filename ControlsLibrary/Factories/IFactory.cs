@@ -21,7 +21,7 @@ namespace ControlsLibrary.Factories
         Func<ITabCollection, ITabCollection> CustomTabsPanel { get; set; }
         Func<ITabWindow, ITabWindow> CustomTabWindow { get; set; }
 
-        void SwitchWindow(IBufferedCollection newParent, ITabPanel tab);
+        void SwitchWindow(ITabPanel tab);
 
         IControl CreateControl(object control);
         IPanel CreatePanel(object panel);

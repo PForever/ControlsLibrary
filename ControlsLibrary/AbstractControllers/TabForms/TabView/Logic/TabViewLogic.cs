@@ -1,6 +1,8 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab;
 using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab.Events;
+using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab.Events.Handlers;
 using ControlsLibrary.Containers;
 using ControlsLibrary.Factories;
 
@@ -56,6 +58,17 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
             set => Container.Orientation = value;
         }
 
+        public override void AddNew()
+        {
+            Container.AddNew();
+        }
+
+        public override void RemoveSelected()
+        {
+            Container.RemoveSelected();
+        }
+
+
         public override IFactory Factory { get; }
         public override ITabWindow Owner { get; set; }
 
@@ -73,6 +86,13 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
             Container.RelativePosition = 30;
 
             TabCollection.TabDisposing += OnTabDisposing;
+            TabCollection.TabDeleting += OnTabDeleting;
+        }
+
+        protected override void OnTabDeleting(object sender, TabDeletingEventArgs arg)
+        {
+            //TabCollection.Remove(arg.TabPanel, disposing: false);
+            BufferedCollection.Remove(arg.TabPanel.TabContent, arg.Disposing);
         }
 
         protected override void OnTabDisposing(object sender, TabEventArgs arg)
@@ -82,7 +102,9 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
 
         protected override void OnSelectedTabRemoved(object sender, TabEventArgs arg)
         {
-            TabCollection.Remove(TabCollection.SelectedTab);
+            ITabPanel tab = TabCollection.SelectedTab;
+            BufferedCollection.Remove(tab.TabContent);
+            TabCollection.Remove(tab);
         }
 
         protected override void OnNewTabAdded(object sender, TabEventArgs arg)
@@ -96,11 +118,11 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
             Show(args.TabPanel.TabContent);
         }
 
-        public override void Join(ITabView tabView)
+        public override void Join(IEnumerable<ITabPanel> childsTab)
         {
-            foreach (ITabPanel panel in tabView.TabCollection)
+            foreach (ITabPanel panel in childsTab)
             {
-                Factory.SwitchWindow(BufferedCollection, panel);
+                Factory.SwitchWindow(panel);
                 TabCollection.Add(panel);
             }
         }
@@ -109,6 +131,7 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         {
             BufferedCollection.Current = tabContent;
         }
+
 
 
         protected override void Dispose(bool dispose)

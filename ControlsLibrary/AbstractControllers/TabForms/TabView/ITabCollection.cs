@@ -15,12 +15,12 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView
 
         #endregion
         #region TabEvents
-        void OnTabDeleted(object sender, TabEventArgs args);
         void OnTabMoved(object sender, TabMovedEventArgs args);
         void OnTabSelected(object sender, TabEventArgs args);
         event TabSelectedEventHandler TabSelected;
-        event TabSelectedEventHandler ButtonAddClickedHandler;
+        event TabSelectedEventHandler ButtonAddClickedHandler; 
         event TabEventHandler TabDisposing;
+        event TabDeletingEventHandler TabDeleting;
         #endregion
 
         ITabView Owner { get; set; }
@@ -29,6 +29,7 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView
         void OnTabDrop(object sender, TabDropEventArgs args);
         void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs);
         void OnTabDisposing(object sender, TabEventArgs arg);
+        void OnTabDeleting(object sender, TabDeletingEventArgs arg);
         bool Remove(ITabPanel item, bool disposing);
     }
 

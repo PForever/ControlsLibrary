@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab;
 using ControlsLibrary.AbstractControllers.TabForms.TabView.Tab.Events;
 using ControlsLibrary.Containers;
@@ -14,13 +15,16 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         protected abstract void OnSelectedTabRemoved(object sender, TabEventArgs arg);
         protected abstract void OnNewTabAdded(object sender, TabEventArgs arg);
         protected abstract void OnTabSelected(object sender, TabEventArgs args);
+        protected abstract void OnTabDeleting(object sender, TabDeletingEventArgs arg);
 
         public abstract object Control { get; }
 
         public abstract IControlList Controls { get; set; }
         public abstract Orientation Orientation { get; set; }
-        public abstract void Join(ITabView tabView);
+        public abstract void Join(IEnumerable<ITabPanel> childsTab);
         public abstract void Show(ITabContent tabContent = null);
+        public abstract void RemoveSelected();
+        public abstract void AddNew();
         public abstract IFactory Factory { get; }
         public abstract ITabWindow Owner { get; set; }
 
@@ -65,5 +69,6 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
             TabCollection?.Dispose();
             BufferedCollection?.Dispose();
         }
+
     }
 }

@@ -11,11 +11,11 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Tab
     {
         //object Panel { get; set; }
         ITabContent TabContent { get; }
-        void Delete();
+        void Delete(bool disposing);
         void Select();
         void Unselect(object sender, TabEventArgs args);
         bool IsSelected { get; }
-        event TabEventHandler TabDeleted;
+        event TabDeletingEventHandler TabDeleting;
         event TabMoveHandler TabMoved;
         event TabSelectedEventHandler TabSelected;
         event TabDropEventHandler TabDrop;

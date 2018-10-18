@@ -7,5 +7,14 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.WinHelp
     /// </summary>
     internal class WtfException : Exception
     {
+        public WtfException() : base()
+        {
+        }
+        public WtfException(string message) : base(message)
+        {
+        }
+        public WtfException(object obj) : base(obj.ToString())
+        {
+        }
     }
 }

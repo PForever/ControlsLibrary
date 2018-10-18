@@ -50,11 +50,12 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
             }
         }
 
-        public override void Remove(ITabContent tabPanelTabContent)
+        public override void Remove(ITabContent tabPanelTabContent, bool disposing = true)
         {
-            Controls.Remove(tabPanelTabContent);
             Buffer.Remove(tabPanelTabContent);
             if (Current == tabPanelTabContent) Current = null;
+
+            Controls.Remove(tabPanelTabContent, disposing);
         }
     }
 }

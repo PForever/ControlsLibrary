@@ -61,14 +61,6 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
             }
         }
 
-        public override void OnTabDeleted(object sender, TabEventArgs args)
-        {
-            int index = Controls.IndexOf(args.TabPanel);
-            Controls.RemoveAt(index);
-            Surfacing(index, Controls.Count - 1);
-            TryRender();
-        }
-
         protected override void Surfacing(int from, int to)
         {
             StateManager.OnSurfacing(Controls, from, to, CurrentTabLen, Indent);
@@ -188,13 +180,25 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
             tabWindow.Location = location;
             tabWindow.Open();
         }
-
+        
         public override void OnTabDisposing(object sender, TabEventArgs arg)
         {
             ITabPanel tab = arg.TabPanel;
             TabUnbinding(tab);
             TabDisposingInvoke(arg);
         }
+
+        public override void OnTabDeleting(object sender, TabDeletingEventArgs arg)
+        {
+            //int index = Controls.IndexOf(args.TabPanel);
+            //Controls.RemoveAt(index);
+            //Surfacing(index, Controls.Count - 1);
+            //TryRender();
+            ITabPanel tab = arg.TabPanel;
+            TabUnbinding(tab);
+            TabDeletingInvoke(arg);
+        }
+
 
         protected override bool RectangleContains(Point tabPanelLocation, int delta)
         {
@@ -236,7 +240,7 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         {
             TabSelected += item.Unselect;
             item.TabSelected += OnTabSelected;
-            item.TabDeleted += OnTabDeleted;
+            item.TabDeleting += (sender, arg) => OnTabDeleting(sender, arg);
             item.TabMoved += OnTabMoved;
             item.TabDrop += OnTabDrop;
             item.Disposing += OnTabDisposing;
@@ -246,7 +250,7 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         {
             TabSelected -= item.Unselect;
             item.TabSelected -= OnTabSelected;
-            item.TabDeleted -= OnTabDeleted;
+            item.TabDeleting -= OnTabDeleting;
             item.TabMoved -= OnTabMoved;
             item.TabDrop -= OnTabDrop;
             item.Disposing -= OnTabDisposing;
@@ -279,7 +283,9 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         {
             ITabPanel tab = (ITabPanel) Controls[index];
             Controls.RemoveAt(index, disposing);
-            TabUnbinding(tab);
+            //TabUnbinding(tab);
+            tab.Delete(disposing); //TODO сделать... изящнее. Через удаление вкладки
+
             Surfacing(index, Controls.Count - 1);
             TryRender();
             if (Count > index)

@@ -20,7 +20,6 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         public abstract Orientation Orientation { get; set; }
         protected abstract TabCollectionState StateManager { get; set; }
         protected abstract IPanel TabsPanel { get; }
-        public abstract void OnTabDeleted(object sender, TabEventArgs args);
         protected abstract void Surfacing(int from, int to);
         protected abstract void CalcLen();
         protected abstract bool TryRender();
@@ -37,6 +36,7 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         public abstract void OnTabDrop(object sender, TabDropEventArgs args);
         public abstract void OnAddClicked(object sender, TabEventArgs tabCollectionEventArgs);
         public abstract void OnTabDisposing(object sender, TabEventArgs arg);
+        public abstract void OnTabDeleting(object sender, TabDeletingEventArgs arg);
         public abstract bool Remove(ITabPanel item, bool disposing);
         protected abstract bool RectangleContains(Point tabPanelLocation, int delta);
         protected abstract void InitializeComponent();
@@ -129,6 +129,17 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
             _TabDisposing.Invoke(this, arg);
         }
 
+        private event TabDeletingEventHandler _TabDeleting;
+        public virtual event TabDeletingEventHandler TabDeleting
+        {
+            add { this._TabDeleting += value; }
+            remove { this._TabDeleting -= value; }
+        }
+        protected virtual void TabDeletingInvoke(TabDeletingEventArgs arg)
+        {
+            _TabDeleting.Invoke(this, arg);
+        }
+
         private event TabSelectedEventHandler _ButtonAddClickedHandler;
         public virtual event TabSelectedEventHandler ButtonAddClickedHandler
         {
@@ -180,5 +191,6 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
         {
             Dispose(true);
         }
+
     }
 }
