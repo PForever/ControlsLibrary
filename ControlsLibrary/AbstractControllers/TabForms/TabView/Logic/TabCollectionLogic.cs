@@ -108,6 +108,8 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
                  Surfacing(oldIndex, index - 1);
             else Surfacing(index + 1, oldIndex);
             SelectedTab.BringToFront();
+            //TODO костыль
+            Render();
         }
 
         protected override void SwitchCollectionPositions(int oldIndex, int index)
@@ -148,7 +150,9 @@ namespace ControlsLibrary.AbstractControllers.TabForms.TabView.Logic
 
         public override void OnSizeChanged(object sender, SizeChangedHandlerArgs args)
         {
-            TryRender();
+            CalcLen();
+            //TODO костыль
+            Render();
         }
 
         public override void OnTabDrop(object sender, TabDropEventArgs args)

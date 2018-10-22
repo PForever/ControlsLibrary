@@ -218,6 +218,7 @@ namespace ControlsLibrary.Factories.Concrete
 
         public void SwitchWindow(ITabPanel tab)
         {
+            //TODO избавиться
             ((Control)tab.Control).ForgetYourFather();
             ((Control)tab.TabContent.Control).ForgetYourFather();
             //((Control)tab.Control).ForgetAll();
@@ -235,9 +236,10 @@ namespace ControlsLibrary.Factories.Concrete
         {
             //((Control)tab.Control).ForgetAll();
             //((Control)tab.TabContent.Control).ForgetAll();
-            Panel panel = (Panel)tab.Control;
-            panel.MouseDown += tab.OnMouseClick;
-            panel.MouseUp += (sender, e) => tab.OnMouseUp(sender, new TabDropEventArgs(null, e.Location, Control.MousePosition));
+
+            //Panel panel = (Panel)tab.Control;
+            //panel.MouseDown += tab.OnMouseClick;
+            //panel.MouseUp += (sender, e) => tab.OnMouseUp(sender, new TabDropEventArgs(null, e.Location, Control.MousePosition));
 
             Form window = CreateDefaultTabWindow();
             ITabView tabView = new TabViewLogic(tab, this);

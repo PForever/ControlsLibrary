@@ -142,8 +142,16 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls.TabForm.TabView.T
         private static SynchronizationContext _context = SynchronizationContext.Current;
         public void ChangeLocation(Point point)
         {
-            if (_rendering != null && !_rendering.IsCompleted) _rendering = _rendering.ContinueWith(t => MoveAnimation(point));
-            else _rendering = MoveAnimation(point);
+            if (_rendering != null && !_rendering.IsCompleted)
+            {
+                tokenSource.Cancel(); 
+                tokenSource = new CancellationTokenSource();
+                /*_rendering = _rendering.ContinueWith(t => MoveAnimation(point));*/
+            }
+            else
+            {
+                _rendering = MoveAnimation(point);
+            }
         }
 
         private Task _rendering;
@@ -173,15 +181,17 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls.TabForm.TabView.T
             TabDeleting.Invoke(this, new TabDeletingEventArgs(this, disposing));
         }
 
+        private CancellationTokenSource tokenSource;
         public void InitializeComponent()
         {
-            MoveAnimation = MoveAnimationHandlerAsync;
+            tokenSource = new CancellationTokenSource();
+            MoveAnimation = point => MoveAnimationHandlerAsync(point, tokenSource.Token);
         }
 
-        private const int _speed = 3;
-        private const int _step = 10;
+        private const int _speed = 10;
+        private const int _step = 1;
         private const int _delte = 0;
-        private async Task MoveAnimationHandlerAsync(Point point)
+        private async Task MoveAnimationHandlerAsync(Point point, CancellationToken token)
         {
             int dY = point.Y - Location.Y;
             int dX = point.X - Location.X;
@@ -196,8 +206,9 @@ namespace ControlsLibrary.Factories.Concrete.WinForms.Controls.TabForm.TabView.T
 
             for (int i = 0; i < steps; i++)
             {
+                if(token.IsCancellationRequested) break;
                 AddLocation(stepX, stepY);
-                await Task.Delay(_speed);
+                await Task.Delay(_speed, token);
             }
             if(_context != SynchronizationContext.Current) _context.Send(state => Location = (Point)state, point);
             else Location = point;
